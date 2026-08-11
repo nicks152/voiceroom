@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { createBrowserClient } from "@supabase/ssr"
 
 export default function AuthPage() {
@@ -15,16 +14,15 @@ export default function AuthPage() {
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
-    
+
     try {
-      // First, look up the user's email from their username via API
       const lookupRes = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -38,7 +36,6 @@ export default function AuthPage() {
         return
       }
 
-      // Sign in with the email
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: lookupData.email,
         password,
@@ -59,47 +56,41 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="min-h-screen bg-foreground flex items-center justify-center px-6">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--c4-black)] px-6">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <Link href="/" className="inline-block">
-            <Image
-              src="/images/logo-dark.png"
-              alt="The Voice Room by AMP Studios"
-              width={240}
-              height={60}
-              className="h-14 w-auto"
-              priority
-            />
+        <div className="mb-10 text-center">
+          <Link
+            href="/"
+            className="display inline-block text-2xl font-extrabold uppercase tracking-tight text-white md:text-3xl"
+          >
+            Voice Room
           </Link>
+          <p className="mt-2 text-[11px] tracking-[0.18em] uppercase text-white/40">
+            By AMP Studios
+          </p>
         </div>
 
-        {/* Card */}
-        <div className="border border-background/20 bg-foreground p-8 lg:p-10">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="font-serif text-2xl lg:text-3xl text-background mb-2">
+        <div className="relative border-2 border-white/20 bg-[var(--c4-black)] p-8 lg:p-10">
+          <div className="absolute top-0 left-0 h-1 w-full bg-[var(--c4-yellow)]" />
+
+          <div className="mb-8 text-center">
+            <h1 className="display text-2xl font-extrabold uppercase tracking-tight text-white lg:text-3xl">
               Admin Access
             </h1>
-            <p className="text-sm text-background/60">
-              Sign in to your account
-            </p>
+            <p className="mt-2 text-sm text-white/55">Sign in to your account</p>
           </div>
 
-          {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3 border border-red-500/30 bg-red-500/10 text-red-400 text-sm text-center">
+            <div className="mb-6 border-2 border-[var(--c4-red)] bg-[var(--c4-red)]/10 p-3 text-center text-sm text-[var(--c4-red)]">
               {error}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label 
-                htmlFor="username" 
-                className="block text-xs tracking-[0.15em] uppercase text-background/80 mb-2"
+              <label
+                htmlFor="username"
+                className="c4-label mb-2 block text-white/70"
               >
                 Username
               </label>
@@ -110,14 +101,14 @@ export default function AuthPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 required
-                className="w-full px-4 py-3 bg-background/5 border border-background/20 text-background placeholder:text-background/40 focus:outline-none focus:border-background/50 transition-colors"
+                className="w-full border-2 border-white/20 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--c4-yellow)]"
               />
             </div>
 
             <div>
-              <label 
-                htmlFor="password" 
-                className="block text-xs tracking-[0.15em] uppercase text-background/80 mb-2"
+              <label
+                htmlFor="password"
+                className="c4-label mb-2 block text-white/70"
               >
                 Password
               </label>
@@ -128,24 +119,23 @@ export default function AuthPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="w-full px-4 py-3 bg-background/5 border border-background/20 text-background placeholder:text-background/40 focus:outline-none focus:border-background/50 transition-colors"
+                className="w-full border-2 border-white/20 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--c4-yellow)]"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-4 bg-background text-foreground text-xs tracking-[0.2em] uppercase hover:bg-background/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[var(--c4-white)] py-4 text-xs tracking-[0.2em] uppercase text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-yellow)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? "Loading..." : "Sign In"}
             </button>
           </form>
 
-          {/* Back Link */}
-          <div className="text-center mt-8">
-            <Link 
+          <div className="mt-8 text-center">
+            <Link
               href="/"
-              className="text-sm text-background/60 hover:text-background transition-colors border-b border-background/30 pb-0.5"
+              className="text-sm text-white/55 transition-colors hover:text-white"
             >
               Back to Home
             </Link>

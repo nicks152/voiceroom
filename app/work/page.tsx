@@ -1,13 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Play, X } from "lucide-react"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { FavoritesProvider } from "@/contexts/favorites-context"
-import { FilterProvider } from "@/contexts/filter-context"
-import { InquiryProvider, useInquiry } from "@/contexts/inquiry-context"
+import { useState } from "react"
+import { SiteShell } from "@/components/voice-room/site-shell"
+import { HeroLine, Reveal, Stagger } from "@/components/voice-room/motion"
+import { useInquiry } from "@/contexts/inquiry-context"
 
 type VideoModalData = {
   youtubeId?: string
@@ -21,7 +18,8 @@ const featuredProject = {
   client: "MrBeast",
   category: "Entertainment",
   year: "2024",
-  description: "Breaking 100M+ views in just a few weeks is business as usual for MrBeast — but behind that scale is a serious level of precision. On this project, we handled full voice direction and recording, working closely to shape performance, pacing, and tone so it lands exactly as intended for a global audience. From guiding delivery to capturing clean, high-impact takes, every detail was dialled in to match the energy and clarity that this level of content demands. A small part of a massive production — but one that makes all the difference.",
+  description:
+    "Breaking 100M+ views in just a few weeks is business as usual for MrBeast — but behind that scale is a serious level of precision. On this project, we handled full voice direction and recording, working closely to shape performance, pacing, and tone so it lands exactly as intended for a global audience. From guiding delivery to capturing clean, high-impact takes, every detail was dialled in to match the energy and clarity that this level of content demands. A small part of a massive production — but one that makes all the difference.",
   youtubeId: "pAnGwRiQ4-4",
   thumbnail: "/images/mrbeast-thumbnail.jpg",
   services: ["Voice Direction", "Recording"],
@@ -35,6 +33,7 @@ const caseStudies = [
     year: "2025",
     description: "Brand commercial celebrating the spirit of self-expression and authenticity.",
     youtubeId: "1pfmTvxS-fE",
+    thumbnail: "/images/tusker-thumbnail.jpg",
     services: ["Voice Casting", "Recording"],
   },
   {
@@ -42,7 +41,8 @@ const caseStudies = [
     client: "Steam",
     category: "Commercial",
     year: "2025",
-    description: "High-energy brand commercial capturing the bold spirit of Steam Energy Drink. Produced by Amp Films.",
+    description:
+      "High-energy brand commercial capturing the bold spirit of Steam Energy Drink. Produced by Amp Films.",
     vimeoId: "1087927799",
     vimeoHash: "861ea2b7cc",
     thumbnail: "/images/steam-thumbnail.jpg",
@@ -55,331 +55,290 @@ const caseStudies = [
     year: "2024",
     description: "Brand commercial bringing the Absa story to life across East Africa.",
     youtubeId: "5OpWGiGD_tQ",
+    thumbnail: "/images/absa-thumbnail.jpg",
+    services: ["Voice Casting", "Recording"],
+  },
+  {
+    title: "The Promised Land Season 2",
+    client: "The Promised Land",
+    category: "Entertainment",
+    year: "2025",
+    description:
+      "ADR for Season 2 of the biblical comedy series — precision dialogue replacement to keep every joke and performance landing clean.",
+    youtubeId: "MN54fod_YzQ",
+    thumbnail: "/images/promised-land-thumbnail.jpg",
+    services: ["ADR"],
+  },
+  {
+    title: "NBA Playoffs 2026",
+    client: "NBA",
+    category: "Sports",
+    year: "2026",
+    description:
+      "Casting and recording for NBA Playoffs coverage — high-energy delivery built for broadcast pace, crowd heat, and global audiences.",
+    youtubeId: "G5e2wMocITg",
+    thumbnail: "/images/nba-playoffs-thumbnail.jpg",
+    services: ["Voice Casting", "Recording"],
+  },
+  {
+    title: "Airtel Kenya - Si Ni Mi Nakushow",
+    client: "Airtel",
+    category: "Commercial",
+    year: "2025",
+    description:
+      "New Airtel advert featuring Nyaminde — casting and recording a voice that carries the brand with clarity and warmth.",
+    youtubeId: "y7AB2BJcdiU",
+    thumbnail: "/images/airtel-nyminde-thumbnail.jpg",
     services: ["Voice Casting", "Recording"],
   },
 ]
 
 const stats = [
-  { number: "500+", label: "Projects Delivered" },
-  { number: "150+", label: "Brand Partners" },
-  { number: "12", label: "Years Experience" },
-  { number: "25+", label: "Languages" },
+  { value: "300+", label: "Projects Delivered" },
+  { value: "100+", label: "Brand Partners" },
+  { value: "12", label: "Years Experience" },
+  { value: "10+", label: "Languages" },
 ]
-
-function WorkPageContent() {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [videoModal, setVideoModal] = useState<VideoModalData>(null)
-  const { openInquiry } = useInquiry()
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
-
-  return (
-    <main className="min-h-screen bg-background">
-          <Header />
-          
-          {/* Hero Section */}
-          <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto">
-              <div className="max-w-4xl overflow-hidden">
-                <p 
-                  className={`text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6 transition-all duration-700 ease-out ${
-                    isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  Our Work
-                </p>
-                <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight mb-6">
-                  <span 
-                    className={`block transition-all duration-700 ease-out delay-100 ${
-                      isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                    }`}
-                  >
-                    Our Work
-                  </span>
-                </h1>
-                <p 
-                  className={`text-lg text-muted-foreground max-w-2xl transition-all duration-700 ease-out delay-300 ${
-                    isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  From global brands to local storytelling, explore how we&apos;ve helped bring projects to life through the power of voice.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Featured Project with Video */}
-          <section className="pb-16 lg:pb-24 px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto">
-              <div 
-                className={`transition-all duration-700 ease-out delay-500 ${
-                  isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-                  {/* Video Player */}
-                  <div className="lg:col-span-3 lg:mt-8 relative aspect-video bg-card border border-border overflow-hidden group">
-                    {!isVideoPlaying ? (
-                      <>
-                        <Image
-                          src={featuredProject.thumbnail}
-                          alt="Voice direction recording session for commercial"
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/30" />
-                        <div className="absolute bottom-4 left-4 text-white">
-                          <p className="font-serif text-xl lg:text-2xl mb-1">{featuredProject.title}</p>
-                          <p className="text-xs text-white/70">{featuredProject.client} / {featuredProject.category}</p>
-                        </div>
-                        <button 
-                          onClick={() => setIsVideoPlaying(true)}
-                          className="absolute inset-0 flex items-center justify-center group"
-                        >
-                          <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white">
-                            <Play className="w-6 h-6 ml-1 text-white transition-colors group-hover:text-black" />
-                          </div>
-                        </button>
-                      </>
-                    ) : (
-                      <iframe
-                        src={`https://www.youtube.com/embed/${featuredProject.youtubeId}?autoplay=1&rel=0`}
-                        className="absolute inset-0 w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    )}
-                  </div>
-
-                  {/* Featured Project Info */}
-                  <div className="lg:col-span-2">
-                    <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">
-                      Featured Project
-                    </p>
-                    <h3 className="font-serif text-2xl lg:text-3xl mb-4">
-                      {featuredProject.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed mb-6">
-                      {featuredProject.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {featuredProject.services.map((service) => (
-                        <span 
-                          key={service}
-                          className="text-xs tracking-[0.1em] uppercase border border-border px-4 py-2"
-                        >
-                          {service}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Stats */}
-          <section className="py-12 lg:py-16 px-6 lg:px-12 border-t border-b border-border bg-card">
-            <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <p className="font-serif text-4xl lg:text-5xl mb-2">{stat.number}</p>
-                    <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Case Studies Grid */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-16">
-                <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                  Case Studies
-                </p>
-                <h2 className="font-serif text-3xl lg:text-4xl">
-                  Voiceover Projects for Global Brands
-                </h2>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-                {caseStudies.map((study, index) => (
-                  <div 
-                    key={index} 
-                    className={`group ${study.youtubeId || study.vimeoId ? 'cursor-pointer' : ''}`}
-                    onClick={() => {
-                      if (study.youtubeId || study.vimeoId) {
-                        setVideoModal({
-                          youtubeId: study.youtubeId,
-                          vimeoId: study.vimeoId,
-                          vimeoHash: study.vimeoHash,
-                          title: study.title
-                        })
-                      }
-                    }}
-                  >
-                    {/* Thumbnail */}
-                    <div className="aspect-[4/3] bg-card border border-border mb-6 overflow-hidden relative">
-                      {study.youtubeId ? (
-                        <Image
-                          src={`https://img.youtube.com/vi/${study.youtubeId}/maxresdefault.jpg`}
-                          alt={study.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : study.thumbnail ? (
-                        <Image
-                          src={study.thumbnail}
-                          alt={study.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-foreground/5 flex items-center justify-center">
-                          <span className="font-serif text-lg text-muted-foreground">{study.client}</span>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300" />
-                      {/* Play button overlay for videos */}
-                      {(study.youtubeId || study.vimeoId) && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="w-14 h-14 rounded-full bg-foreground/90 flex items-center justify-center">
-                            <Play className="w-5 h-5 ml-0.5 text-background" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Info */}
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">{study.category}</span>
-                        <span className="text-muted-foreground/30">|</span>
-                        <span className="text-xs text-muted-foreground">{study.year}</span>
-                      </div>
-                      <h3 className="font-serif text-xl mb-2 group-hover:underline underline-offset-4">
-                        {study.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                        {study.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {study.services.slice(0, 2).map((service) => (
-                          <span 
-                            key={service}
-                            className="text-[10px] tracking-[0.1em] uppercase border border-border px-3 py-1"
-                          >
-                            {service}
-                          </span>
-                        ))}
-                        {study.services.length > 2 && (
-                          <span className="text-[10px] tracking-[0.1em] uppercase text-muted-foreground px-2 py-1">
-                            +{study.services.length - 2} more
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* CTA Section */}
-          <section className="py-16 lg:py-20 px-6 lg:px-12 bg-foreground text-background">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                <div>
-                  <h2 className="font-serif text-3xl lg:text-4xl mb-4">
-                    Let&apos;s create something together.
-                  </h2>
-                  <p className="text-background/60 max-w-md">
-                    Tell us about your project and we&apos;ll find the perfect voice.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button 
-                    onClick={openInquiry}
-                    className="text-xs tracking-[0.2em] uppercase border border-background px-8 py-4 hover:bg-background hover:text-foreground transition-all duration-300 text-center"
-                  >
-                    Start a Project
-                  </button>
-                  <a 
-                    href="/roster"
-                    className="text-xs tracking-[0.2em] uppercase bg-background text-foreground px-8 py-4 hover:bg-background/90 transition-all duration-300 text-center"
-                  >
-                    Explore Roster
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <Footer />
-          
-          {/* Video Modal Lightbox */}
-          {videoModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center">
-              {/* Backdrop */}
-              <div 
-                className="absolute inset-0 bg-foreground/90 backdrop-blur-sm animate-in fade-in duration-300"
-                onClick={() => setVideoModal(null)}
-              />
-              
-              {/* Modal Content */}
-              <div className="relative w-full max-w-5xl mx-4 animate-in zoom-in-95 fade-in duration-300">
-                {/* Close Button */}
-                <button 
-                  onClick={() => setVideoModal(null)}
-                  className="absolute -top-12 right-0 text-background/70 hover:text-background transition-colors"
-                >
-                  <X className="w-8 h-8" />
-                </button>
-                
-                {/* Video Player */}
-                <div className="relative aspect-video bg-black">
-                  {videoModal.youtubeId ? (
-                    <iframe
-                      src={`https://www.youtube.com/embed/${videoModal.youtubeId}?autoplay=1&rel=0`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : videoModal.vimeoId ? (
-                    <iframe
-                      src={`https://player.vimeo.com/video/${videoModal.vimeoId}?h=${videoModal.vimeoHash || ''}&autoplay=1&title=0&byline=0&portrait=0`}
-                      className="absolute inset-0 w-full h-full"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : null}
-                </div>
-                
-                {/* Title */}
-                <p className="text-center text-background/70 mt-4 text-sm tracking-[0.1em] uppercase">
-                  {videoModal.title}
-                </p>
-              </div>
-            </div>
-          )}
-        </main>
-  )
-}
 
 export default function WorkPage() {
   return (
-    <FavoritesProvider>
-      <InquiryProvider>
-        <FilterProvider>
-          <WorkPageContent />
-        </FilterProvider>
-      </InquiryProvider>
-    </FavoritesProvider>
+    <SiteShell>
+      <WorkContent />
+    </SiteShell>
+  )
+}
+
+function WorkContent() {
+  const [modal, setModal] = useState<VideoModalData>(null)
+  const { openInquiry } = useInquiry()
+
+  return (
+    <main>
+      <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10 md:py-20">
+        <div className="mx-auto max-w-[1440px]">
+          <p className="c4-label text-[var(--c4-muted)]">
+            <HeroLine>Work</HeroLine>
+          </p>
+          <h1 className="display mt-3 text-5xl font-extrabold uppercase md:text-6xl">
+            <HeroLine delay={0.1}>Featured Work</HeroLine>
+          </h1>
+          <Reveal delay={0.18}>
+            <p className="mt-5 max-w-xl text-lg text-[var(--c4-muted)]">
+              From global brands to local storytelling, explore how we&apos;ve helped bring
+              projects to life through the power of voice.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Featured project */}
+      <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10">
+        <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-2 lg:items-center">
+          <Reveal variant="left">
+            <button
+              type="button"
+              onClick={() =>
+                setModal({
+                  youtubeId: featuredProject.youtubeId,
+                  title: featuredProject.title,
+                })
+              }
+              className="group relative aspect-video w-full overflow-hidden border-2 border-[var(--c4-black)] text-left"
+            >
+              <Image
+                src={featuredProject.thumbnail}
+                alt={featuredProject.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <span className="border-2 border-white bg-[var(--c4-yellow)] px-4 py-2 text-[11px] tracking-[0.2em] uppercase text-[var(--c4-black)]">
+                  Play
+                </span>
+              </span>
+            </button>
+          </Reveal>
+          <Reveal variant="right" delay={0.08}>
+            <p className="c4-label text-[var(--c4-muted)]">
+              {featuredProject.year} · {featuredProject.category} · {featuredProject.client}
+            </p>
+            <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+              {featuredProject.title}
+            </h2>
+            <p className="mt-5 text-sm leading-relaxed text-[var(--c4-muted)] md:text-base">
+              {featuredProject.description}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {featuredProject.services.map((s) => (
+                <span
+                  key={s}
+                  className="border-2 border-[var(--c4-black)] px-2 py-1 text-[10px] tracking-[0.14em] uppercase"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <Reveal as="section" className="border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-5 py-14 md:px-10 md:py-16">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-10 md:grid-cols-4 md:gap-8">
+          {stats.map((stat, i) => (
+            <Reveal key={stat.label} delay={i * 0.06} variant="scale" className="text-center">
+              <p className="display text-4xl font-extrabold uppercase leading-none tracking-tight md:text-5xl lg:text-6xl">
+                {stat.value}
+              </p>
+              <p className="c4-label mt-3 text-[var(--c4-black)]/60">{stat.label}</p>
+            </Reveal>
+          ))}
+        </div>
+      </Reveal>
+
+      <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <Reveal>
+            <h2 className="display text-3xl font-extrabold uppercase">Case Studies</h2>
+          </Reveal>
+          <Stagger className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3" stagger={0.1} variant="scale">
+            {caseStudies.map((study) => {
+              const hasVideo = Boolean(study.youtubeId || study.vimeoId)
+              return (
+              <article key={study.title} className="border-2 border-[var(--c4-black)]">
+                {hasVideo ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setModal({
+                        youtubeId: study.youtubeId,
+                        vimeoId: study.vimeoId,
+                        vimeoHash: study.vimeoHash,
+                        title: study.title,
+                      })
+                    }
+                    className="group relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]"
+                  >
+                    {study.thumbnail ? (
+                      <Image
+                        src={study.thumbnail}
+                        alt={study.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <span className="absolute inset-0 flex items-center justify-center display text-lg font-bold uppercase">
+                        {study.client}
+                      </span>
+                    )}
+                    <span className="absolute bottom-3 right-3 c4-block-black px-2 py-1 text-[10px] tracking-[0.14em] uppercase">
+                      Play
+                    </span>
+                  </button>
+                ) : (
+                  <div className="relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]">
+                    {study.thumbnail ? (
+                      <Image
+                        src={study.thumbnail}
+                        alt={study.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+                )}
+                <div className="p-5">
+                  <p className="c4-label text-[var(--c4-muted)]">
+                    {study.year} · {study.category}
+                  </p>
+                  <h3 className="display mt-2 text-xl font-bold uppercase leading-tight">
+                    {study.title}
+                  </h3>
+                  <p className="mt-3 text-sm text-[var(--c4-muted)]">{study.description}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {study.services.map((s) => (
+                      <span
+                        key={s}
+                        className="border-2 border-[var(--c4-black)] px-2 py-1 text-[10px] tracking-[0.14em] uppercase"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            )})}
+          </Stagger>
+        </div>
+      </section>
+
+      <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="display text-3xl font-extrabold uppercase">
+              Have a project in mind?
+            </h2>
+            <p className="mt-3 text-white/60">
+              Request talent or book a session at AMP Studios.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <button
+              type="button"
+              onClick={openInquiry}
+              className="border-2 border-white px-8 py-4 text-[11px] tracking-[0.2em] uppercase hover:bg-white hover:text-[var(--c4-black)]"
+            >
+              Request Talent
+            </button>
+            <a
+              href="https://www.ampafrica.com/book"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[var(--c4-yellow)] px-8 py-4 text-center text-[11px] tracking-[0.2em] uppercase text-[var(--c4-black)]"
+            >
+              Book a Session
+            </a>
+          </div>
+        </div>
+      </Reveal>
+
+      {modal ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setModal(null)}
+        >
+          <div
+            className="relative w-full max-w-4xl border-2 border-white bg-black"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setModal(null)}
+              className="absolute -top-10 right-0 text-[11px] tracking-[0.2em] uppercase text-white"
+            >
+              Close
+            </button>
+            <div className="aspect-video w-full">
+              {modal.youtubeId ? (
+                <iframe
+                  title={modal.title}
+                  src={`https://www.youtube.com/embed/${modal.youtubeId}?autoplay=1`}
+                  className="h-full w-full"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                />
+              ) : modal.vimeoId ? (
+                <iframe
+                  title={modal.title}
+                  src={`https://player.vimeo.com/video/${modal.vimeoId}${modal.vimeoHash ? `?h=${modal.vimeoHash}&` : "?"}autoplay=1`}
+                  className="h-full w-full"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                />
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </main>
   )
 }

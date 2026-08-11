@@ -1,12 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { FavoritesProvider } from "@/contexts/favorites-context"
-import { FilterProvider } from "@/contexts/filter-context"
-import { InquiryProvider } from "@/contexts/inquiry-context"
+import Link from "next/link"
+import { SiteShell } from "@/components/voice-room/site-shell"
+import { HeroLine, Reveal, Stagger, easeLuxury } from "@/components/voice-room/motion"
+import { motion } from "framer-motion"
 
 const offerings = [
   {
@@ -27,162 +25,124 @@ const offerings = [
   },
 ]
 
-export default function AboutPage() {
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
-
+export default function Concept4AboutPage() {
   return (
-    <FavoritesProvider>
-      <InquiryProvider>
-        <FilterProvider>
-          <main className="min-h-screen bg-background">
-          <Header />
-          
-          {/* Hero Section */}
-          <section className="pt-20 pb-4 lg:pt-24 lg:pb-6 px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto">
-              <div className="overflow-hidden">
-                <h1 className="font-serif text-4xl sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1] tracking-tight">
-                  <span 
-                    className={`block transition-all duration-700 ease-out ${
-                      isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                    }`}
-                  >
-                    Find Your Voice
-                  </span>
-                </h1>
-                <p 
-                  className={`text-lg sm:text-xl text-muted-foreground mt-4 max-w-xl transition-all duration-700 ease-out delay-200 ${
-                    isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                  }`}
-                >
-                  East Africa's voiceover roster, built for global productions.
-                </p>
-              </div>
-              
-              {/* Hero Image */}
-              <div 
-                className={`mt-8 sm:mt-4 lg:-mt-10 transition-all duration-700 ease-out delay-300 ${
-                  isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
+    <SiteShell>
+      <main>
+        <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10 md:py-20">
+          <div className="mx-auto max-w-[1440px]">
+            <h1 className="display text-5xl font-extrabold uppercase md:text-6xl">
+              <HeroLine>Find Your Voice</HeroLine>
+            </h1>
+            <motion.p
+              className="mt-4 max-w-xl text-lg text-[var(--c4-muted)]"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.12, ease: easeLuxury }}
+            >
+              East Africa&apos;s voiceover roster, built for global productions.
+            </motion.p>
+            <motion.div
+              className="relative mt-10 aspect-[21/9] overflow-hidden border-2 border-[var(--c4-black)]"
+              initial={{ opacity: 0, y: 28, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2, ease: easeLuxury }}
+            >
+              <Image
+                src="/images/about-boardroom.png"
+                alt="Voiceover recording session in Nairobi"
+                fill
+                className="object-cover"
+                priority
+              />
+            </motion.div>
+          </div>
+        </section>
+
+        <section className="border-b-2 border-[var(--c4-black)] px-5 py-16 md:px-10 md:py-24">
+          <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-20">
+            <Reveal variant="left">
+              <p className="c4-label text-[var(--c4-muted)]">Our Story</p>
+              <h2 className="display mt-4 text-3xl font-extrabold uppercase md:text-4xl">
+                Created by AMP Studios in Nairobi
+              </h2>
+            </Reveal>
+            <Reveal variant="right" delay={0.08} className="space-y-6 text-base leading-relaxed text-[var(--c4-muted)] md:text-lg">
+              <p>
+                The Voice Room is a curated voiceover platform built to showcase the
+                richness and diversity of talent across Kenya and the wider continent.
+                From warm, relatable narration to bold, distinctive delivery, we represent
+                a spectrum of African voices that resonate both locally and globally.
+              </p>
+              <p>
+                For years, brands and agencies struggled to find authentic African voices
+                that meet international production standards. The Voice Room was built to
+                change that — bringing together a trusted roster of professional voice
+                artists, all accessible at the click of a button.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        <section className="border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-5 py-16 md:px-10 md:py-24">
+          <div className="mx-auto max-w-[1440px]">
+            <Reveal>
+              <p className="c4-label">What We Offer</p>
+              <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+                Excellence at every step
+              </h2>
+            </Reveal>
+            <Stagger className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
+              {offerings.map((offering, index) => (
+                <div key={offering.title} className="border-t-2 border-[var(--c4-black)] pt-5">
+                  <span className="c4-label">0{index + 1}</span>
+                  <h3 className="display mt-3 text-xl font-bold uppercase">{offering.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--c4-black)]/70">
+                    {offering.description}
+                  </p>
+                </div>
+              ))}
+            </Stagger>
+          </div>
+        </section>
+
+        <Reveal as="section" variant="scale" className="border-b-2 border-[var(--c4-black)] px-5 py-20 md:px-10 md:py-28">
+          <div className="mx-auto max-w-[1440px]">
+            <p className="mx-auto max-w-3xl text-center display text-2xl font-bold uppercase leading-relaxed md:text-4xl">
+              At The Voice Room, we don&apos;t just provide voiceovers — we create room for
+              brands to find their voice, and <em className="normal-case">own it.</em>
+            </p>
+          </div>
+        </Reveal>
+
+        <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 className="display text-3xl font-extrabold uppercase md:text-4xl">
+                Ready to find your voice?
+              </h2>
+              <p className="mt-3 max-w-md text-white/60">
+                Explore our roster of exceptional voice artists or get in touch to discuss
+                your project.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Link
+                href="/roster"
+                className="border-2 border-white px-8 py-4 text-center text-[11px] tracking-[0.2em] uppercase transition-colors hover:bg-white hover:text-[var(--c4-black)]"
               >
-                <Image
-                  src="/images/about-boardroom.png"
-                  alt="Voiceover recording session in Nairobi"
-                  width={1200}
-                  height={400}
-                  className="w-full h-auto"
-                  priority
-                />
-              </div>
+                Explore Roster
+              </Link>
+              <a
+                href="mailto:voices@ampafrica.com"
+                className="bg-[var(--c4-yellow)] px-8 py-4 text-center text-[11px] tracking-[0.2em] uppercase text-[var(--c4-black)]"
+              >
+                Get in Touch
+              </a>
             </div>
-          </section>
-
-          {/* Story Section */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-                <div>
-                  <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-                    Our Story
-                  </p>
-                  <h2 className="font-serif text-3xl lg:text-4xl leading-tight">
-                    Created by AMP Studios in Nairobi
-                  </h2>
-                </div>
-                <div className="space-y-6">
-                  <p className="text-lg text-muted-foreground leading-relaxed">
-                    The Voice Room is a curated voiceover platform built to showcase the richness and diversity of talent across Kenya and the wider continent. From warm, relatable narration to bold, distinctive delivery, we represent a spectrum of African voices that resonate both locally and globally.
-                  </p>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
-                    For years, brands and agencies struggled to find authentic African voices that meet international production standards. The Voice Room was built to change that — bringing together a trusted roster of professional voice artists, all accessible at the click of a button.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* What We Offer */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 bg-card border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-16">
-                <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                  What We Offer
-                </p>
-                <h2 className="font-serif text-3xl lg:text-4xl">
-                  Excellence at every step
-                </h2>
-              </div>
-              
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-                {offerings.map((offering, index) => (
-                  <div key={index} className="group">
-                    <div className="border-t border-border pt-6">
-                      <span className="text-xs text-muted-foreground mb-4 block">
-                        0{index + 1}
-                      </span>
-                      <h3 className="font-serif text-xl mb-3">
-                        {offering.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {offering.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Closing Statement */}
-          <section className="py-20 lg:py-32 px-6 lg:px-12 border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="max-w-3xl mx-auto text-center">
-                <p className="font-serif text-2xl lg:text-3xl xl:text-4xl leading-relaxed text-balance">
-                  At The Voice Room, we don&apos;t just provide voiceovers — we create room for brands to find their voice, and <em>own it.</em>
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* CTA Section */}
-          <section className="py-16 lg:py-20 px-6 lg:px-12 bg-foreground text-background">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                <div>
-                  <h2 className="font-serif text-3xl lg:text-4xl mb-4">
-                    Ready to find your voice?
-                  </h2>
-                  <p className="text-background/60 max-w-md">
-                    Explore our roster of exceptional voice artists or get in touch to discuss your project.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <a 
-                    href="/roster"
-                    className="text-xs tracking-[0.2em] uppercase border border-background px-8 py-4 hover:bg-background hover:text-foreground transition-all duration-300 text-center"
-                  >
-                    Explore Roster
-                  </a>
-                  <a 
-                    href="mailto:voices@ampafrica.com"
-                    className="text-xs tracking-[0.2em] uppercase bg-background text-foreground px-8 py-4 hover:bg-background/90 transition-all duration-300 text-center"
-                  >
-                    Get in Touch
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <Footer />
-          </main>
-        </FilterProvider>
-      </InquiryProvider>
-    </FavoritesProvider>
+          </div>
+        </Reveal>
+      </main>
+    </SiteShell>
   )
 }

@@ -1,33 +1,34 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { FavoritesProvider } from "@/contexts/favorites-context"
-import { FilterProvider } from "@/contexts/filter-context"
-import { InquiryProvider, useInquiry } from "@/contexts/inquiry-context"
+import { SiteShell } from "@/components/voice-room/site-shell"
+import { HeroLine, Reveal, Stagger, easeLuxury } from "@/components/voice-room/motion"
+import { useInquiry } from "@/contexts/inquiry-context"
+import { motion } from "framer-motion"
 
 const processSteps = [
   {
     number: "01",
     title: "Casting",
-    description: "We shortlist and match voices based on your script, tone, and audience.",
+    description:
+      "We shortlist and match voices based on your script, tone, and audience.",
   },
   {
     number: "02",
     title: "Direction",
-    description: "We guide performance to ensure the right tone, pacing, and delivery for your project.",
+    description:
+      "We guide performance to ensure the right tone, pacing, and delivery for your project.",
   },
   {
     number: "03",
     title: "Recording",
-    description: "Sessions take place at AMP Studios or remotely, fully directed and engineered.",
+    description:
+      "Sessions take place at AMP Studios or remotely, fully directed and engineered.",
   },
   {
     number: "04",
     title: "Editing & Delivery",
-    description: "We compile, clean, and mix recordings, delivering ready-to-use audio.",
+    description:
+      "We compile, clean, and mix recordings, delivering ready-to-use audio.",
   },
 ]
 
@@ -35,32 +36,38 @@ const services = [
   {
     title: "Voiceover Recording",
     subtitle: "Professional in-studio recording at AMP Studios.",
-    description: "High-quality recording sessions with experienced engineers, built for speed, clarity, and performance.",
+    description:
+      "High-quality recording sessions with experienced engineers, built for speed, clarity, and performance.",
   },
   {
     title: "Voice Casting",
     subtitle: "Curated voice casting tailored to your project.",
-    description: "Access a curated roster of African voice talent across languages, tones, and styles.",
+    description:
+      "Access a curated roster of African voice talent across languages, tones, and styles.",
   },
   {
     title: "Voice Direction",
     subtitle: "Get the performance right.",
-    description: "We guide talent to deliver the right tone, pacing, and emotion for your brand or story.",
+    description:
+      "We guide talent to deliver the right tone, pacing, and emotion for your brand or story.",
   },
   {
     title: "ADR Recording",
     subtitle: "Dialogue recording for film and post-production.",
-    description: "Precision dialogue replacement for film, television, and digital content.",
+    description:
+      "Precision dialogue replacement for film, television, and digital content.",
   },
   {
     title: "IVR Production",
     subtitle: "Voice and production for phone systems and automated experiences.",
-    description: "Professional voice systems for brands, banks, and telecoms — clear, consistent, on-brand.",
+    description:
+      "Professional voice systems for brands, banks, and telecoms — clear, consistent, on-brand.",
   },
   {
     title: "Editing & Mixing",
     subtitle: "Polished, production-ready audio.",
-    description: "We compile the best takes, clean, edit, and mix your recordings to final delivery standards.",
+    description:
+      "We compile the best takes, clean, edit, and mix your recordings to final delivery standards.",
   },
   {
     title: "Remote Sessions",
@@ -75,7 +82,8 @@ const services = [
   {
     title: "AI Voice Licensing",
     subtitle: "Secure, brand-safe voice solutions for scalable content.",
-    description: "We license and manage voice talent for AI-generated and synthetic voice use, giving brands access to consistent, high-quality voice at scale — with full rights and approvals in place.",
+    description:
+      "We license and manage voice talent for AI-generated and synthetic voice use, giving brands access to consistent, high-quality voice at scale — with full rights and approvals in place.",
   },
 ]
 
@@ -86,203 +94,163 @@ const whyUs = [
   "End-to-end delivery, handled in one place",
 ]
 
-function ServicesPageContent() {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const { openInquiry } = useInquiry()
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
-
+export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-background">
-          <Header />
-          
-          {/* Hero Section */}
-          <section className="pt-28 pb-12 lg:pt-36 lg:pb-16 px-6 lg:px-12">
-            <div className="max-w-7xl mx-auto">
-              <div className="max-w-4xl overflow-hidden">
-                <p 
-                  className={`text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6 transition-all duration-700 ease-out ${
-                    isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  Our Services
-                </p>
-                <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.1] tracking-tight mb-6">
-                  <span 
-                    className={`block transition-all duration-700 ease-out delay-100 ${
-                      isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                    }`}
-                  >
-                    Voiceover Services
-                  </span>
-                </h1>
-                <p 
-                  className={`text-lg text-muted-foreground max-w-2xl transition-all duration-700 ease-out delay-300 ${
-                    isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
-                >
-                  From casting to final delivery, we handle every stage of the voice process.
-                </p>
-              </div>
-
-              {/* CTA Buttons */}
-              <div 
-                className={`flex flex-col sm:flex-row gap-4 mt-10 transition-all duration-700 ease-out delay-500 ${
-                  isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                <button 
-                  onClick={openInquiry}
-                  className="text-xs tracking-[0.2em] uppercase border border-foreground px-8 py-4 hover:bg-foreground hover:text-background transition-all duration-300 text-center"
-                >
-                  Request Talent
-                </button>
-                <a 
-                  href="https://www.ampafrica.com/book"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs tracking-[0.2em] uppercase bg-foreground text-background px-8 py-4 hover:bg-foreground/90 transition-all duration-300 text-center"
-                >
-                  Book a Session
-                </a>
-              </div>
-            </div>
-          </section>
-
-          {/* Our Process Section */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-16">
-                <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                  Our Process
-                </p>
-                <h2 className="font-serif text-3xl lg:text-4xl mb-4">
-                  A streamlined workflow from brief to final delivery.
-                </h2>
-              </div>
-
-              <div className="grid md:grid-cols-4 gap-8">
-                {processSteps.map((step, index) => (
-                  <div key={index} className="group">
-                    <div className="border-t border-border pt-6">
-                      <span className="text-xs text-muted-foreground mb-4 block font-mono">
-                        {step.number}
-                      </span>
-                      <h3 className="font-serif text-xl mb-3">
-                        {step.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Services Grid */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 bg-card border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-16">
-                <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                  Services
-                </p>
-                <h2 className="font-serif text-3xl lg:text-4xl">
-                  End-to-end voice production, built for production teams.
-                </h2>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-                {services.map((service, index) => (
-                  <div key={index} className="group border-t border-border pt-8">
-                    <h3 className="font-serif text-xl mb-2">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm font-medium mb-3">
-                      {service.subtitle}
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {service.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Why The Voice Room */}
-          <section className="py-16 lg:py-24 px-6 lg:px-12 border-t border-border">
-            <div className="max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-                <div>
-                  <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-                    Why The Voice Room
-                  </p>
-                  <h2 className="font-serif text-3xl lg:text-4xl leading-tight">
-                    Built inside AMP Studios, we combine casting, recording, and production under one roof.
-                  </h2>
-                </div>
-                <div className="space-y-4">
-                  {whyUs.map((item, index) => (
-                    <div key={index} className="flex items-start gap-4 py-4 border-b border-border">
-                      <span className="text-xs text-muted-foreground font-mono">0{index + 1}</span>
-                      <p className="text-lg">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* CTA Section */}
-          <section className="py-16 lg:py-20 px-6 lg:px-12 bg-foreground text-background">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                <div>
-                  <h2 className="font-serif text-3xl lg:text-4xl mb-4">
-                    Need a voice for your next project?
-                  </h2>
-                  <p className="text-background/60 max-w-md">
-                    Tell us what you&apos;re looking for — we&apos;ll handle the rest.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button 
-                    onClick={openInquiry}
-                    className="text-xs tracking-[0.2em] uppercase border border-background px-8 py-4 hover:bg-background hover:text-foreground transition-all duration-300 text-center"
-                  >
-                    Request Talent
-                  </button>
-                  <a 
-                    href="https://www.ampafrica.com/book"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs tracking-[0.2em] uppercase bg-background text-foreground px-8 py-4 hover:bg-background/90 transition-all duration-300 text-center"
-                  >
-                    Book a Session
-                  </a>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <Footer />
-        </main>
+    <SiteShell>
+      <ServicesContent />
+    </SiteShell>
   )
 }
 
-export default function ServicesPage() {
+function ServicesContent() {
+  const { openInquiry } = useInquiry()
+
   return (
-    <FavoritesProvider>
-      <InquiryProvider>
-        <FilterProvider>
-          <ServicesPageContent />
-        </FilterProvider>
-      </InquiryProvider>
-    </FavoritesProvider>
+    <main>
+      <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10 md:py-20">
+        <div className="mx-auto max-w-[1440px]">
+          <motion.p
+            className="c4-label text-[var(--c4-muted)]"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeLuxury }}
+          >
+            Services
+          </motion.p>
+          <h1 className="display mt-3 max-w-3xl text-5xl font-extrabold uppercase md:text-6xl">
+            <HeroLine delay={0.1}>End-to-end voice production</HeroLine>
+          </h1>
+          <motion.p
+            className="mt-5 max-w-xl text-lg text-[var(--c4-muted)]"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, delay: 0.2, ease: easeLuxury }}
+          >
+            Built for production teams who need reliable, high-quality voice work —
+            from casting through delivery.
+          </motion.p>
+          <motion.div
+            className="mt-8 flex flex-col gap-4 sm:flex-row"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: easeLuxury }}
+          >
+            <button
+              type="button"
+              onClick={openInquiry}
+              className="c4-block-black px-8 py-4 text-[11px] tracking-[0.2em] uppercase transition-transform hover:-translate-y-0.5"
+            >
+              Request Talent
+            </button>
+            <a
+              href="https://www.ampafrica.com/book"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-2 border-[var(--c4-black)] bg-transparent px-8 py-4 text-center text-[11px] tracking-[0.2em] uppercase transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-yellow)]"
+            >
+              Book a Session
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-5 py-16 md:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <Reveal>
+            <p className="c4-label">Our Process</p>
+            <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+              From brief to delivery
+            </h2>
+          </Reveal>
+          <Stagger className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
+            {processSteps.map((step) => (
+              <div key={step.number} className="border-t-2 border-[var(--c4-black)] pt-5">
+                <span className="display text-4xl font-extrabold text-[var(--c4-black)]/25">
+                  {step.number}
+                </span>
+                <h3 className="display mt-2 text-xl font-bold uppercase">{step.title}</h3>
+                <p className="mt-3 text-sm text-[var(--c4-black)]/70">{step.description}</p>
+              </div>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      <section className="border-b-2 border-[var(--c4-black)] px-5 py-16 md:px-10 md:py-24">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid grid-cols-1 gap-[2px] border-2 border-[var(--c4-black)] bg-[var(--c4-black)] md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, i) => (
+              <Reveal
+                key={service.title}
+                delay={i * 0.04}
+                variant="fade"
+                as="article"
+                className="flex h-full flex-col bg-[var(--c4-white)] p-6 md:p-8"
+              >
+                <h2 className="display text-xl font-bold uppercase md:text-2xl">
+                  {service.title}
+                </h2>
+                <p className="mt-2 text-sm font-medium">{service.subtitle}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--c4-muted)]">
+                  {service.description}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-5 py-16 md:px-10">
+        <div className="mx-auto max-w-[1440px]">
+          <Reveal>
+            <p className="c4-label text-[var(--c4-muted)]">Why Us</p>
+            <h2 className="display mt-3 text-3xl font-extrabold uppercase">
+              Why The Voice Room
+            </h2>
+          </Reveal>
+          <Stagger className="mt-10 space-y-0" stagger={0.08}>
+            {whyUs.map((reason, index) => (
+              <div
+                key={reason}
+                className="flex items-start gap-6 border-b-2 border-[var(--c4-black)] py-5 last:border-0"
+              >
+                <span className="c4-label text-[var(--c4-muted)]">0{index + 1}</span>
+                <p className="text-lg">{reason}</p>
+              </div>
+            ))}
+          </Stagger>
+        </div>
+      </section>
+
+      <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="display text-3xl font-extrabold uppercase md:text-4xl">
+              Need a voice for your next project?
+            </h2>
+            <p className="mt-3 text-white/60">
+              Tell us what you&apos;re looking for — we&apos;ll handle the rest.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <button
+              type="button"
+              onClick={openInquiry}
+              className="border-2 border-white px-8 py-4 text-[11px] tracking-[0.2em] uppercase hover:bg-white hover:text-[var(--c4-black)]"
+            >
+              Request Talent
+            </button>
+            <a
+              href="https://www.ampafrica.com/book"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[var(--c4-yellow)] px-8 py-4 text-center text-[11px] tracking-[0.2em] uppercase text-[var(--c4-black)]"
+            >
+              Book a Session
+            </a>
+          </div>
+        </div>
+      </Reveal>
+    </main>
   )
 }

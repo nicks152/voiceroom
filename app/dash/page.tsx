@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { LogOut, Users, LayoutDashboard, UserCog, Pencil, Trash2, Play, Square, Upload, Check, X, Plus, Search, ChevronDown, Loader2, Star, Key, Download } from "lucide-react"
 import {
   DropdownMenu,
@@ -57,7 +56,7 @@ const VOICE_OPTIONS = ["MALE", "FEMALE"]
 const LANGUAGE_OPTIONS = ["English", "Swahili", "French", "Kikuyu", "Luo"]
 
 // Chart colors
-const COLORS = ["#f5f5f4", "#a8a29e", "#78716c", "#57534e", "#44403c", "#292524"]
+const COLORS = ["#e8ff00", "#fafaf8", "#a3a39c", "#5c5c58", "#0047ff", "#0a0a0a"]
 const LANGUAGE_COLORS = ["#10b981", "#8b5cf6", "#f97316", "#06b6d4", "#ec4899", "#84cc16", "#6366f1", "#14b8a6"]
 const AGE_COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#eab308", "#a855f7", "#f97316"]
 
@@ -685,22 +684,18 @@ export default function DashboardPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-foreground">
+    <main className="min-h-screen bg-[var(--c4-black)]">
       {/* Header */}
-      <header className="border-b border-background/20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/images/logo-dark.png"
-              alt="The Voice Room by AMP Studios"
-              width={240}
-              height={60}
-              className="h-12 w-auto"
-              priority
-            />
+      <header className="border-b-2 border-white/15">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-12">
+          <Link
+            href="/"
+            className="display text-xl font-extrabold uppercase tracking-tight text-white"
+          >
+            Voice Room
           </Link>
           <div className="flex items-center gap-6">
-            <span className="text-xs text-background/60">{currentUserName || "Admin"}</span>
+            <span className="c4-label text-white/50">{currentUserName || "Admin"}</span>
             <button 
               onClick={async () => {
                 const { createBrowserClient } = await import("@supabase/ssr")
@@ -711,7 +706,7 @@ export default function DashboardPage() {
                 await supabase.auth.signOut()
                 window.location.href = "/auth"
               }}
-              className="text-background/60 hover:text-background transition-colors"
+              className="text-white/50 transition-colors hover:text-white"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -719,25 +714,27 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8">
+      <div className="mx-auto max-w-7xl px-6 py-8 lg:px-12">
         {/* Page Title */}
         <div className="mb-8">
-          <h1 className="font-serif text-3xl text-background mb-2">Admin Dashboard</h1>
-          <p className="text-sm text-background/60">Manage talent, users, and site content</p>
+          <h1 className="display text-3xl font-extrabold uppercase tracking-tight text-white">
+            Admin Dashboard
+          </h1>
+          <p className="mt-2 text-sm text-white/55">Manage talent, users, and site content</p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-8 border-b border-background/20">
+        <div className="mb-8 flex gap-1 border-b-2 border-white/15">
           {tabs.map((tab) => {
             const Icon = tab.icon
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 text-xs tracking-[0.15em] uppercase transition-colors border-b-2 -mb-[2px] ${
+                className={`-mb-[2px] flex items-center gap-2 border-b-2 px-6 py-3 text-xs tracking-[0.15em] uppercase transition-colors ${
                   activeTab === tab.id
-                    ? "border-background text-background"
-                    : "border-transparent text-background/50 hover:text-background/80"
+                    ? "border-[var(--c4-yellow)] text-white"
+                    : "border-transparent text-white/45 hover:text-white/80"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -751,26 +748,26 @@ export default function DashboardPage() {
         {activeTab === "dashboard" && (
           <div className="space-y-8">
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border border-background/20 p-6">
-                <p className="text-xs tracking-[0.15em] uppercase text-background/60 mb-2">Total Talent</p>
-                <p className="font-serif text-4xl text-background">{talents.length}</p>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="border-2 border-white/15 p-6">
+                <p className="c4-label mb-2 text-white/50">Total Talent</p>
+                <p className="display text-4xl font-extrabold uppercase text-white">{talents.length}</p>
               </div>
-              <div className="border border-background/20 p-6">
-                <p className="text-xs tracking-[0.15em] uppercase text-background/60 mb-2">Dashboard Users</p>
-                <p className="font-serif text-4xl text-background">{profiles.length}</p>
+              <div className="border-2 border-white/15 p-6">
+                <p className="c4-label mb-2 text-white/50">Dashboard Users</p>
+                <p className="display text-4xl font-extrabold uppercase text-white">{profiles.length}</p>
               </div>
-              <div className="border border-background/20 p-6">
-                <p className="text-xs tracking-[0.15em] uppercase text-background/60 mb-2">Inquiries</p>
-                <p className="font-serif text-4xl text-background">0</p>
+              <div className="border-2 border-white/15 p-6">
+                <p className="c4-label mb-2 text-white/50">Inquiries</p>
+                <p className="display text-4xl font-extrabold uppercase text-white">0</p>
               </div>
             </div>
 
             {/* Charts */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Talent by Sex */}
-              <div className="border border-background/20 p-6">
-                <h2 className="font-serif text-xl text-background mb-6">Talent by Sex</h2>
+              <div className="border-2 border-white/15 p-6">
+                <h2 className="display mb-6 text-xl font-extrabold uppercase text-white">Talent by Sex</h2>
                 <div className="h-[250px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -809,8 +806,8 @@ export default function DashboardPage() {
               </div>
 
               {/* Talent by Language */}
-              <div className="border border-background/20 p-6">
-                <h2 className="font-serif text-xl text-background mb-6">Talent by Language</h2>
+              <div className="border-2 border-white/15 p-6">
+                <h2 className="display mb-6 text-xl font-extrabold uppercase text-white">Talent by Language</h2>
                 <div className="h-[250px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -849,8 +846,8 @@ export default function DashboardPage() {
               </div>
 
               {/* Talent by Age Range */}
-              <div className="border border-background/20 p-6">
-                <h2 className="font-serif text-xl text-background mb-6">Talent by Age Range</h2>
+              <div className="border-2 border-white/15 p-6">
+                <h2 className="display mb-6 text-xl font-extrabold uppercase text-white">Talent by Age Range</h2>
                 <div className="h-[250px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1667,8 +1664,8 @@ export default function DashboardPage() {
         {/* Add Admin Modal */}
         {isAddingAdmin && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-foreground border border-background/20 p-6 w-full max-w-md">
-              <h3 className="font-serif text-xl text-background mb-4">Add Admin User</h3>
+            <div className="w-full max-w-md border-2 border-white/20 bg-[var(--c4-black)] p-6">
+              <h3 className="display mb-4 text-xl font-extrabold uppercase text-white">Add Admin User</h3>
               <p className="text-sm text-background/60 mb-4">
                 Create a new admin user with access to the dashboard.
               </p>
@@ -1771,8 +1768,8 @@ export default function DashboardPage() {
         {/* Delete Admin Confirmation Modal */}
         {deletingAdmin && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-foreground border border-background/20 p-6 w-full max-w-md">
-              <h3 className="font-serif text-xl text-background mb-4">Delete User</h3>
+            <div className="w-full max-w-md border-2 border-white/20 bg-[var(--c4-black)] p-6">
+              <h3 className="display mb-4 text-xl font-extrabold uppercase text-white">Delete User</h3>
               <p className="text-sm text-background/70 mb-6">
                 Are you sure you want to delete <span className="text-background font-medium">{deletingAdmin.name}</span>? This action cannot be undone.
               </p>
@@ -1816,8 +1813,8 @@ export default function DashboardPage() {
         {/* Edit Admin Modal */}
         {editingAdminId && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-foreground border border-background/20 p-6 w-full max-w-md">
-              <h3 className="font-serif text-xl text-background mb-4">Edit Admin User</h3>
+            <div className="w-full max-w-md border-2 border-white/20 bg-[var(--c4-black)] p-6">
+              <h3 className="display mb-4 text-xl font-extrabold uppercase text-white">Edit Admin User</h3>
               
               {adminError && (
                 <div className="mb-4 p-3 border border-red-500/30 bg-red-500/10 text-red-400 text-sm">
@@ -1888,8 +1885,8 @@ export default function DashboardPage() {
         {/* Password Edit Modal */}
         {passwordEditUserId && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-foreground border border-background/20 p-6 w-full max-w-md">
-              <h3 className="font-serif text-xl text-background mb-4">Change Password</h3>
+            <div className="w-full max-w-md border-2 border-white/20 bg-[var(--c4-black)] p-6">
+              <h3 className="display mb-4 text-xl font-extrabold uppercase text-white">Change Password</h3>
               
               {passwordSuccess ? (
                 <div className="py-8 text-center">

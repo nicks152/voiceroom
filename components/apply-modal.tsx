@@ -157,57 +157,66 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
 
   const isVisible = animationState === "open"
 
+  const fieldLabel = "c4-label mb-3 block text-[var(--c4-muted)]"
+  const fieldInput =
+    "w-full border-b-2 border-[var(--c4-black)] bg-transparent py-2 text-sm outline-none placeholder:text-[var(--c4-black)]/35 focus:border-[var(--c4-cobalt)]"
+  const fieldTrigger =
+    "flex w-full items-center justify-between border-b-2 border-[var(--c4-black)] bg-transparent py-2 text-left text-sm outline-none"
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className={`absolute inset-0 bg-foreground/80 backdrop-blur-sm transition-opacity duration-400 ease-out ${
+    <div className="voice-room fixed inset-0 z-[100] flex items-center justify-center">
+      <div
+        className={`absolute inset-0 bg-[var(--c4-black)]/75 transition-opacity duration-400 ease-out ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
       />
-      
-      {/* Modal */}
-      <div 
-        className={`relative bg-background w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 border border-border transition-all duration-400 ease-out ${
-          isVisible 
-            ? "opacity-100 scale-100 translate-y-0" 
-            : "opacity-0 scale-95 translate-y-8"
+
+      <div
+        className={`relative mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-all duration-400 ease-out ${
+          isVisible
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-8 scale-95 opacity-0"
         }`}
       >
-        {/* Close Button */}
-        <button 
+        <div className="absolute top-0 left-0 h-2 w-full bg-[var(--c4-yellow)]" />
+
+        <button
+          type="button"
           onClick={handleClose}
-          className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors z-10"
+          aria-label="Close"
+          className="absolute top-5 right-5 z-10 flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
         >
-          <X className="w-5 h-5" />
+          <X className="h-4 w-4" />
         </button>
 
-        {/* Content */}
-        <div className="p-8 lg:p-12">
-          <h2 className="font-serif text-3xl lg:text-4xl mb-2">Join Our Roster</h2>
-          <p className="text-sm text-muted-foreground mb-10">
-            We&apos;re always looking for exceptional voice talent. Submit your details and demo below.
+        <div className="p-8 pt-10 lg:p-12">
+          <span className="c4-sticker c4-block-yellow">Apply</span>
+          <h2 className="display mt-5 text-3xl font-extrabold uppercase leading-none tracking-tight md:text-5xl">
+            Join Our Roster
+          </h2>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--c4-muted)]">
+            We&apos;re always looking for exceptional voice talent. Submit your details and demo
+            below.
           </p>
 
           {submitSuccess && (
-            <div className="mb-6 p-4 border border-green-500/30 bg-green-500/10 text-green-600 text-sm text-center">
+            <div className="mt-8 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-4 py-3 text-center text-sm">
               Application submitted! We&apos;ll review your demo and be in touch.
             </div>
           )}
 
           {submitError && (
-            <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 text-red-500 text-sm text-center">
+            <div className="mt-8 border-2 border-[var(--c4-red)] bg-[var(--c4-red)]/10 px-4 py-3 text-center text-sm text-[var(--c4-red)]">
               {submitError}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Name & Email */}
-            <div className="grid md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="mt-10 space-y-8">
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Full Name <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Full Name <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -215,12 +224,12 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Email <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Email <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="email"
@@ -228,16 +237,15 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
             </div>
 
-            {/* Phone & Location */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Phone Number <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Phone Number <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="tel"
@@ -245,12 +253,12 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+254 7XX XXX XXX"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Location <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Location <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -258,30 +266,36 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="City, Country"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
             </div>
 
-            {/* Voice Type & Language */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Primary Voice Type <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Primary Voice Type <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full flex items-center justify-between border-b border-border pb-2 text-sm text-left">
-                    <span className={voiceType ? "text-foreground" : "text-muted-foreground"}>
+                  <DropdownMenuTrigger className={fieldTrigger}>
+                    <span
+                      className={
+                        voiceType ? "text-[var(--c4-black)]" : "text-[var(--c4-black)]/35"
+                      }
+                    >
                       {voiceType || "Select voice type"}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-[var(--c4-muted)]" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[280px] z-[200]">
+                  <DropdownMenuContent
+                    align="start"
+                    className="z-[200] w-[280px] rounded-none border-2 border-[var(--c4-black)] bg-[var(--c4-white)] p-0"
+                  >
                     {voiceTypes.map((type) => (
-                      <DropdownMenuItem 
-                        key={type} 
+                      <DropdownMenuItem
+                        key={type}
                         onSelect={() => setVoiceType(type)}
-                        className="text-sm cursor-pointer"
+                        className="cursor-pointer rounded-none border-b border-[var(--c4-line)] px-4 py-3 text-sm last:border-0 focus:bg-[var(--c4-yellow)] focus:text-[var(--c4-black)]"
                       >
                         {type}
                       </DropdownMenuItem>
@@ -290,22 +304,29 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                 </DropdownMenu>
               </div>
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Primary Language <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Primary Language <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full flex items-center justify-between border-b border-border pb-2 text-sm text-left">
-                    <span className={language ? "text-foreground" : "text-muted-foreground"}>
+                  <DropdownMenuTrigger className={fieldTrigger}>
+                    <span
+                      className={
+                        language ? "text-[var(--c4-black)]" : "text-[var(--c4-black)]/35"
+                      }
+                    >
                       {language || "Select language"}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-[var(--c4-muted)]" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[280px] z-[200]">
+                  <DropdownMenuContent
+                    align="start"
+                    className="z-[200] w-[280px] rounded-none border-2 border-[var(--c4-black)] bg-[var(--c4-white)] p-0"
+                  >
                     {languages.map((lang) => (
-                      <DropdownMenuItem 
-                        key={lang} 
+                      <DropdownMenuItem
+                        key={lang}
                         onSelect={() => setLanguage(lang)}
-                        className="text-sm cursor-pointer"
+                        className="cursor-pointer rounded-none border-b border-[var(--c4-line)] px-4 py-3 text-sm last:border-0 focus:bg-[var(--c4-yellow)] focus:text-[var(--c4-black)]"
                       >
                         {lang}
                       </DropdownMenuItem>
@@ -315,34 +336,30 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
               </div>
             </div>
 
-            {/* Experience */}
             <div>
-              <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                Tell Us About Your Experience
-              </label>
+              <label className={fieldLabel}>Tell Us About Your Experience</label>
               <textarea
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
                 placeholder="Share your voiceover experience, training, notable projects, and what makes your voice unique..."
                 rows={4}
-                className="w-full bg-transparent border border-border p-4 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground resize-none"
+                className="w-full resize-none border-2 border-[var(--c4-black)] bg-transparent p-4 text-sm outline-none placeholder:text-[var(--c4-black)]/35 focus:border-[var(--c4-cobalt)]"
               />
             </div>
 
-            {/* Demo Upload */}
             <div>
-              <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                Upload Demo Reel <span className="text-muted-foreground">*</span>
+              <label className={fieldLabel}>
+                Upload Demo Reel <span className="text-[var(--c4-cobalt)]">*</span>
               </label>
               <div
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`border border-dashed p-8 text-center cursor-pointer transition-colors ${
-                  isDragging 
-                    ? "border-foreground bg-muted/20" 
-                    : "border-border hover:border-foreground"
+                className={`cursor-pointer border-2 border-dashed p-8 text-center transition-colors ${
+                  isDragging
+                    ? "border-[var(--c4-black)] bg-[var(--c4-yellow)]"
+                    : "border-[var(--c4-black)]/40 hover:border-[var(--c4-black)] hover:bg-[var(--c4-yellow)]/30"
                 }`}
               >
                 <input
@@ -352,28 +369,27 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <Upload className="w-6 h-6 mx-auto mb-3 text-muted-foreground" />
+                <Upload className="mx-auto mb-3 h-5 w-5 text-[var(--c4-muted)]" />
                 {demoFile ? (
-                  <p className="text-sm">{demoFile.name}</p>
+                  <p className="text-sm font-medium">{demoFile.name}</p>
                 ) : (
                   <>
                     <p className="text-sm">
                       <span className="font-medium">Click to upload</span>
-                      <span className="text-muted-foreground"> or drag & drop</span> your demo
+                      <span className="text-[var(--c4-muted)]"> or drag & drop</span> your demo
                     </p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      MP3, WAV, M4A, or AAC (MAX. 20MB)
+                    <p className="mt-2 c4-label text-[var(--c4-muted)]">
+                      MP3, WAV, M4A, or AAC · Max 20MB
                     </p>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting || submitSuccess || !demoFile}
-              className="w-full bg-foreground text-background py-4 text-xs tracking-[0.2em] uppercase hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full c4-block-black py-4 text-[11px] tracking-[0.2em] uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? "Submitting..." : submitSuccess ? "Submitted!" : "Submit Application"}
             </button>

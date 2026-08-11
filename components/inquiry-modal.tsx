@@ -25,7 +25,7 @@ const licenseTypes = [
   "E-Learning",
   "Documentary",
   "Film/Cinema",
-  "Other"
+  "Other",
 ]
 
 const territories = [
@@ -36,8 +36,14 @@ const territories = [
   "North America",
   "Europe",
   "Asia Pacific",
-  "Other"
+  "Other",
 ]
+
+const fieldLabel = "c4-label mb-3 block text-[var(--c4-muted)]"
+const fieldInput =
+  "w-full border-b-2 border-[var(--c4-black)] bg-transparent py-2 text-sm outline-none placeholder:text-[var(--c4-black)]/35 focus:border-[var(--c4-cobalt)]"
+const fieldTrigger =
+  "flex w-full items-center justify-between border-b-2 border-[var(--c4-black)] bg-transparent py-2 text-left text-sm outline-none"
 
 export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
   const { favorites, count } = useFavorites()
@@ -60,7 +66,6 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
     if (isOpen && animationState === "closed") {
       setAnimationState("opening")
       setTimeout(() => setAnimationState("open"), 50)
-      // Auto-check shortlist if there are favorites when modal opens
       if (count > 0) {
         setIncludeShortlist(true)
       }
@@ -109,7 +114,7 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitError(null)
-    
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -125,19 +130,18 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
           message,
         }),
       })
-      
+
       const data = await res.json()
-      
+
       if (data.error) {
         setSubmitError(data.error)
         setIsSubmitting(false)
         return
       }
-      
+
       setSubmitSuccess(true)
       setTimeout(() => {
         handleClose()
-        // Reset form
         setName("")
         setCompany("")
         setEmail("")
@@ -158,56 +162,58 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
   const isVisible = animationState === "open"
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className={`absolute inset-0 bg-foreground/80 backdrop-blur-sm transition-opacity duration-400 ease-out ${
+    <div className="voice-room fixed inset-0 z-[100] flex items-center justify-center">
+      <div
+        className={`absolute inset-0 bg-[var(--c4-black)]/75 transition-opacity duration-400 ease-out ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
       />
-      
-      {/* Modal */}
-      <div 
-        className={`relative bg-background w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4 border border-border transition-all duration-400 ease-out ${
-          isVisible 
-            ? "opacity-100 scale-100 translate-y-0" 
-            : "opacity-0 scale-95 translate-y-8"
+
+      <div
+        className={`relative mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-all duration-400 ease-out ${
+          isVisible
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-8 scale-95 opacity-0"
         }`}
       >
-        {/* Close Button */}
-        <button 
+        <div className="absolute top-0 left-0 h-2 w-full bg-[var(--c4-yellow)]" />
+
+        <button
+          type="button"
           onClick={handleClose}
-          className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors z-10"
+          aria-label="Close"
+          className="absolute top-5 right-5 z-10 flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
         >
-          <X className="w-5 h-5" />
+          <X className="h-4 w-4" />
         </button>
 
-        {/* Content */}
-        <div className="p-8 lg:p-12">
-          <h2 className="font-serif text-3xl lg:text-4xl mb-2">Send us a message</h2>
-          <p className="text-sm text-muted-foreground mb-10">
+        <div className="p-8 pt-10 lg:p-12">
+          <span className="c4-sticker c4-block-yellow">Inquire</span>
+          <h2 className="display mt-5 text-3xl font-extrabold uppercase leading-none tracking-tight md:text-5xl">
+            Send us a message
+          </h2>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--c4-muted)]">
             Fill out the form below and we&apos;ll get back to you as soon as possible.
           </p>
 
           {submitSuccess && (
-            <div className="mb-6 p-4 border border-green-500/30 bg-green-500/10 text-green-600 text-sm text-center">
+            <div className="mt-8 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-4 py-3 text-center text-sm">
               Message sent successfully! We&apos;ll be in touch soon.
             </div>
           )}
 
           {submitError && (
-            <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 text-red-500 text-sm text-center">
+            <div className="mt-8 border-2 border-[var(--c4-red)] bg-[var(--c4-red)]/10 px-4 py-3 text-center text-sm text-[var(--c4-red)]">
               {submitError}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Name & Company */}
-            <div className="grid md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="mt-10 space-y-8">
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Name <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Name <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -215,12 +221,12 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Company <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Company <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -228,15 +234,14 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Your company name"
-                  className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                  className={fieldInput}
                 />
               </div>
             </div>
 
-            {/* Email */}
             <div>
-              <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                Email Address <span className="text-muted-foreground">*</span>
+              <label className={fieldLabel}>
+                Email Address <span className="text-[var(--c4-cobalt)]">*</span>
               </label>
               <input
                 type="email"
@@ -244,29 +249,35 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full bg-transparent border-b border-border pb-2 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground"
+                className={fieldInput}
               />
             </div>
 
-            {/* License & Territory */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  License Usage <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  License Usage <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full flex items-center justify-between border-b border-border pb-2 text-sm text-left">
-                    <span className={licenseType ? "text-foreground" : "text-muted-foreground"}>
+                  <DropdownMenuTrigger className={fieldTrigger}>
+                    <span
+                      className={
+                        licenseType ? "text-[var(--c4-black)]" : "text-[var(--c4-black)]/35"
+                      }
+                    >
                       {licenseType || "Select license type"}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-[var(--c4-muted)]" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[280px] z-[200]">
+                  <DropdownMenuContent
+                    align="start"
+                    className="z-[200] w-[280px] rounded-none border-2 border-[var(--c4-black)] bg-[var(--c4-white)] p-0"
+                  >
                     {licenseTypes.map((type) => (
-                      <DropdownMenuItem 
-                        key={type} 
+                      <DropdownMenuItem
+                        key={type}
                         onClick={() => setLicenseType(type)}
-                        className="text-sm"
+                        className="rounded-none border-b border-[var(--c4-line)] px-4 py-3 text-sm last:border-0 focus:bg-[var(--c4-yellow)] focus:text-[var(--c4-black)]"
                       >
                         {type}
                       </DropdownMenuItem>
@@ -275,22 +286,29 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
                 </DropdownMenu>
               </div>
               <div>
-                <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                  Territory <span className="text-muted-foreground">*</span>
+                <label className={fieldLabel}>
+                  Territory <span className="text-[var(--c4-cobalt)]">*</span>
                 </label>
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full flex items-center justify-between border-b border-border pb-2 text-sm text-left">
-                    <span className={territory ? "text-foreground" : "text-muted-foreground"}>
+                  <DropdownMenuTrigger className={fieldTrigger}>
+                    <span
+                      className={
+                        territory ? "text-[var(--c4-black)]" : "text-[var(--c4-black)]/35"
+                      }
+                    >
                       {territory || "Select territory"}
                     </span>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 text-[var(--c4-muted)]" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[280px] z-[200]">
+                  <DropdownMenuContent
+                    align="start"
+                    className="z-[200] w-[280px] rounded-none border-2 border-[var(--c4-black)] bg-[var(--c4-white)] p-0"
+                  >
                     {territories.map((t) => (
-                      <DropdownMenuItem 
-                        key={t} 
+                      <DropdownMenuItem
+                        key={t}
                         onClick={() => setTerritory(t)}
-                        className="text-sm"
+                        className="rounded-none border-b border-[var(--c4-line)] px-4 py-3 text-sm last:border-0 focus:bg-[var(--c4-yellow)] focus:text-[var(--c4-black)]"
                       >
                         {t}
                       </DropdownMenuItem>
@@ -300,56 +318,53 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
               </div>
             </div>
 
-            {/* Send Shortlist */}
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]/40 p-4">
               <input
                 type="checkbox"
                 id="shortlist"
                 checked={includeShortlist}
                 onChange={(e) => setIncludeShortlist(e.target.checked)}
-                className="mt-1 w-4 h-4 border border-border bg-transparent checked:bg-foreground"
+                className="mt-0.5 h-4 w-4 accent-[var(--c4-black)]"
               />
               <div>
-                <label htmlFor="shortlist" className="text-sm font-medium cursor-pointer">
-                  Send Shortlist ({count} artist{count !== 1 ? 's' : ''})
+                <label
+                  htmlFor="shortlist"
+                  className="cursor-pointer text-sm font-medium text-[var(--c4-black)]"
+                >
+                  Send Shortlist ({count} artist{count !== 1 ? "s" : ""})
                 </label>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {count > 0 
-                    ? "Check this to include your starred voice artists with your message."
-                    : "No artists currently shortlisted - star artists in the roster to add them."
-                  }
+                <p className="mt-1 text-xs text-[var(--c4-muted)]">
+                  {count > 0
+                    ? "Include your starred voice artists with this message."
+                    : "No artists shortlisted yet — star artists in the roster to add them."}
                 </p>
               </div>
             </div>
 
-            {/* Message */}
             <div>
-              <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                Additional Message
-              </label>
+              <label className={fieldLabel}>Additional Message</label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Tell us more about your project requirements..."
                 rows={4}
-                className="w-full bg-transparent border border-border p-4 text-sm focus:outline-none focus:border-foreground transition-colors placeholder:text-muted-foreground resize-none"
+                className="w-full resize-none border-2 border-[var(--c4-black)] bg-transparent p-4 text-sm outline-none placeholder:text-[var(--c4-black)]/35 focus:border-[var(--c4-cobalt)]"
               />
             </div>
 
-            {/* File Upload */}
             <div>
-              <label className="block text-xs tracking-[0.15em] uppercase mb-3">
-                Attach Script <span className="text-muted-foreground">(Optional)</span>
+              <label className={fieldLabel}>
+                Attach Script <span className="normal-case tracking-normal">(optional)</span>
               </label>
               <div
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                className={`border border-dashed p-8 text-center cursor-pointer transition-colors ${
-                  isDragging 
-                    ? "border-foreground bg-muted/20" 
-                    : "border-border hover:border-foreground"
+                className={`cursor-pointer border-2 border-dashed p-8 text-center transition-colors ${
+                  isDragging
+                    ? "border-[var(--c4-black)] bg-[var(--c4-yellow)]"
+                    : "border-[var(--c4-black)]/40 hover:border-[var(--c4-black)] hover:bg-[var(--c4-yellow)]/30"
                 }`}
               >
                 <input
@@ -359,28 +374,27 @@ export function InquiryModal({ isOpen, onClose }: InquiryModalProps) {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <Upload className="w-6 h-6 mx-auto mb-3 text-muted-foreground" />
+                <Upload className="mx-auto mb-3 h-5 w-5 text-[var(--c4-muted)]" />
                 {file ? (
-                  <p className="text-sm">{file.name}</p>
+                  <p className="text-sm font-medium">{file.name}</p>
                 ) : (
                   <>
                     <p className="text-sm">
                       <span className="font-medium">Click to upload</span>
-                      <span className="text-muted-foreground"> or drag & drop</span> your script
+                      <span className="text-[var(--c4-muted)]"> or drag & drop</span> your script
                     </p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      PDF, DOC, DOCX, RTF, or TXT (MAX. 10MB)
+                    <p className="mt-2 c4-label text-[var(--c4-muted)]">
+                      PDF, DOC, DOCX, RTF, or TXT · Max 10MB
                     </p>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={isSubmitting || submitSuccess}
-              className="w-full bg-foreground text-background py-4 text-xs tracking-[0.2em] uppercase hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full c4-block-black py-4 text-[11px] tracking-[0.2em] uppercase transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? "Sending..." : submitSuccess ? "Sent!" : "Send Message"}
             </button>

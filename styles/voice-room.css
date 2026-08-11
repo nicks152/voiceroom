@@ -1,0 +1,122 @@
+.voice-room {
+  --c4-yellow: #e8ff00;
+  --c4-black: #0a0a0a;
+  --c4-white: #fafaf8;
+  --c4-cobalt: #0047ff;
+  --c4-red: #e63b2e;
+  --c4-muted: #5c5c58;
+  --c4-line: rgba(10, 10, 10, 0.12);
+  background: var(--c4-white);
+  color: var(--c4-black);
+  font-family: var(--font-vr-sans), system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.voice-room .display {
+  font-family: var(--font-vr-display), system-ui, sans-serif;
+}
+
+.voice-room ::selection {
+  background: var(--c4-yellow);
+  color: var(--c4-black);
+}
+
+.voice-room .c4-label {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.voice-room .c4-block-yellow {
+  background: var(--c4-yellow);
+  color: var(--c4-black);
+}
+
+.voice-room .c4-block-black {
+  background: var(--c4-black);
+  color: var(--c4-white);
+}
+
+.voice-room .c4-block-cobalt {
+  background: var(--c4-cobalt);
+  color: var(--c4-white);
+}
+
+.voice-room .c4-sticker {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 2px solid currentColor;
+  transform: rotate(-2deg);
+}
+
+.voice-room .c4-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: c4-marquee 32s linear infinite;
+}
+
+.voice-room .c4-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes c4-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.voice-room input,
+.voice-room select,
+.voice-room textarea {
+  font-family: inherit;
+}
+
+html.vr-loading,
+html.vr-loading body {
+  overflow: hidden;
+}
+
+/* Native arrow cursor — slightly enlarged, white fill / black outline */
+html.vr-cursor-on,
+html.vr-cursor-on body,
+html.vr-cursor-on body * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23fff' stroke='%230a0a0a' stroke-width='2.25' stroke-linejoin='round' d='M5 3v23l6.2-5.4 4.2 9.2 3.6-1.6-4.1-9.1H24z'/%3E%3C/svg%3E")
+      5 3,
+    auto !important;
+}
+
+html.vr-cursor-on a,
+html.vr-cursor-on button,
+html.vr-cursor-on [role="button"],
+html.vr-cursor-on label,
+html.vr-cursor-on summary,
+html.vr-cursor-on select,
+html.vr-cursor-on .cursor-pointer {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath fill='%23fff' stroke='%230a0a0a' stroke-width='2.25' stroke-linejoin='round' d='M5 3v23l6.2-5.4 4.2 9.2 3.6-1.6-4.1-9.1H24z'/%3E%3Ccircle cx='22' cy='22' r='5.5' fill='%23e8ff00' stroke='%230a0a0a' stroke-width='2'/%3E%3C/svg%3E")
+      5 3,
+    pointer !important;
+}
+
+html.vr-cursor-on input,
+html.vr-cursor-on textarea {
+  cursor: text !important;
+}
+
+@media (pointer: coarse) {
+  html.vr-cursor-on,
+  html.vr-cursor-on body,
+  html.vr-cursor-on body * {
+    cursor: auto !important;
+  }
+}
