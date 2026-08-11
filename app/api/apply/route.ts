@@ -1,10 +1,9 @@
-import { Resend } from "resend"
 import { NextResponse } from "next/server"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResend } from "@/lib/resend"
 
 export async function POST(request: Request) {
   try {
+    const resend = getResend()
     const formData = await request.formData()
     
     const name = formData.get("name") as string
