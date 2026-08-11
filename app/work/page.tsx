@@ -203,70 +203,80 @@ function WorkContent() {
           <Stagger className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3" stagger={0.1} variant="scale">
             {caseStudies.map((study) => {
               const hasVideo = Boolean(study.youtubeId || study.vimeoId)
+              const thumb =
+                study.thumbnail ||
+                (study.youtubeId
+                  ? `https://img.youtube.com/vi/${study.youtubeId}/hqdefault.jpg`
+                  : null)
               return (
-              <article key={study.title} className="border-2 border-[var(--c4-black)]">
-                {hasVideo ? (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setModal({
-                        youtubeId: study.youtubeId,
-                        vimeoId: study.vimeoId,
-                        vimeoHash: study.vimeoHash,
-                        title: study.title,
-                      })
-                    }
-                    className="group relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]"
-                  >
-                    {study.thumbnail ? (
-                      <Image
-                        src={study.thumbnail}
-                        alt={study.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <span className="absolute inset-0 flex items-center justify-center display text-lg font-bold uppercase">
-                        {study.client}
+                <article key={study.title} className="border-2 border-[var(--c4-black)]">
+                  {hasVideo ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setModal({
+                          youtubeId: study.youtubeId,
+                          vimeoId: study.vimeoId,
+                          vimeoHash: study.vimeoHash,
+                          title: study.title,
+                        })
+                      }
+                      className="group relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]"
+                    >
+                      {thumb ? (
+                        <Image
+                          src={thumb}
+                          alt={study.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <span className="absolute inset-0 flex items-center justify-center display text-lg font-bold uppercase">
+                          {study.client}
+                        </span>
+                      )}
+                      <span className="absolute bottom-3 right-3 c4-block-black px-2 py-1 text-[10px] tracking-[0.14em] uppercase">
+                        Play
                       </span>
-                    )}
-                    <span className="absolute bottom-3 right-3 c4-block-black px-2 py-1 text-[10px] tracking-[0.14em] uppercase">
-                      Play
-                    </span>
-                  </button>
-                ) : (
-                  <div className="relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]">
-                    {study.thumbnail ? (
-                      <Image
-                        src={study.thumbnail}
-                        alt={study.title}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : null}
+                    </button>
+                  ) : (
+                    <div className="relative aspect-video w-full overflow-hidden border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)]">
+                      {thumb ? (
+                        <Image
+                          src={thumb}
+                          alt={study.title}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="absolute inset-0 flex items-center justify-center display text-lg font-bold uppercase">
+                          {study.client}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="p-5">
+                    <p className="c4-label text-[var(--c4-muted)]">
+                      {study.year} · {study.category}
+                    </p>
+                    <h3 className="display mt-2 text-xl font-bold uppercase leading-tight">
+                      {study.title}
+                    </h3>
+                    <p className="mt-3 text-sm text-[var(--c4-muted)]">{study.description}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {study.services.map((s) => (
+                        <span
+                          key={s}
+                          className="border-2 border-[var(--c4-black)] px-2 py-1 text-[10px] tracking-[0.14em] uppercase"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                )}
-                <div className="p-5">
-                  <p className="c4-label text-[var(--c4-muted)]">
-                    {study.year} · {study.category}
-                  </p>
-                  <h3 className="display mt-2 text-xl font-bold uppercase leading-tight">
-                    {study.title}
-                  </h3>
-                  <p className="mt-3 text-sm text-[var(--c4-muted)]">{study.description}</p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {study.services.map((s) => (
-                      <span
-                        key={s}
-                        className="border-2 border-[var(--c4-black)] px-2 py-1 text-[10px] tracking-[0.14em] uppercase"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </article>
-            )})}
+                </article>
+              )
+            })}
           </Stagger>
         </div>
       </section>

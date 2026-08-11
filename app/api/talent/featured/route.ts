@@ -17,7 +17,8 @@ export async function GET() {
           id,
           title,
           file_url,
-          duration_sec
+          duration_sec,
+          published
         )
       `)
       .eq("featured", true)
@@ -28,7 +29,15 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ talent: data })
+    const talent = (data || []).map((t) => ({
+      ...t,
+      samples: (t.samples || []).filter(
+        (s: { published?: boolean; file_url?: string | null }) =>
+          s.published !== false && s.file_url
+      ),
+    }))
+
+    return NextResponse.json({ talent })
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch featured talent" },

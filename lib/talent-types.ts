@@ -27,5 +27,9 @@ export function displayName(talent: Talent) {
 
 export function firstSample(talent: Talent) {
   const samples = talent.samples || []
-  return samples.find((s) => s.published !== false && s.file_url) || samples[0] || null
+  return samples.find((s) => s.published !== false && s.file_url) || null
+}
+
+export function publishedSamples(talent: Talent) {
+  return (talent.samples || []).filter((s) => s.published !== false && s.file_url)
 }

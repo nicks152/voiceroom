@@ -9,7 +9,7 @@ import { ArrowUpRight, Star } from "lucide-react"
 import { ConceptAudioPlayer } from "@/components/concepts/shared/audio-player"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useInquiry } from "@/contexts/inquiry-context"
-import { displayName, type Talent } from "@/lib/talent-types"
+import { displayName, publishedSamples, type Talent } from "@/lib/talent-types"
 
 export default function RosterProfilePage({
   params,
@@ -81,7 +81,7 @@ function ProfileContent({ id }: { id: string }) {
     )
   }
 
-  const samples = (talent.samples || []).filter((s) => s.file_url)
+  const samples = publishedSamples(talent)
   const name = displayName(talent)
   const shortlisted = isFavorite(name)
 
