@@ -11,8 +11,8 @@ export function VoiceRoomFooter() {
     <>
       <ApplyModal isOpen={isApplyOpen} onClose={() => setIsApplyOpen(false)} />
       <footer className="border-t border-white/15 c4-block-black px-5 py-16 md:px-10">
-        <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-5">
+        <div className="mx-auto grid max-w-[1440px] min-w-0 gap-12 lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-5">
             <Link
               href="/"
               className="display inline-block text-2xl font-extrabold uppercase tracking-tight text-white md:text-3xl"
@@ -54,8 +54,8 @@ export function VoiceRoomFooter() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 md:grid-cols-3 lg:col-span-7">
-            <div>
+          <div className="grid min-w-0 grid-cols-2 gap-8 sm:gap-10 md:grid-cols-3 lg:col-span-7">
+            <div className="min-w-0">
               <p className="c4-label mb-5 text-white/40">Explore</p>
               <ul className="space-y-3 text-sm text-white/70">
                 <li>
@@ -79,7 +79,7 @@ export function VoiceRoomFooter() {
                 </li>
               </ul>
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="c4-label mb-5 text-white/40">Agency</p>
               <ul className="space-y-3 text-sm text-white/70">
                 <li>
@@ -93,13 +93,16 @@ export function VoiceRoomFooter() {
                   </Link>
                 </li>
                 <li>
-                  <a href="mailto:voices@ampafrica.com" className="hover:text-white">
+                  <a
+                    href="mailto:voices@ampafrica.com"
+                    className="break-all hover:text-white"
+                  >
                     voices@ampafrica.com
                   </a>
                 </li>
               </ul>
             </div>
-            <div>
+            <div className="min-w-0 col-span-2 md:col-span-1">
               <p className="c4-label mb-5 text-white/40">Studio</p>
               <ul className="space-y-3 text-sm text-white/70">
                 <li>
@@ -127,7 +130,7 @@ export function VoiceRoomFooter() {
           </div>
         </div>
         <div className="mx-auto mt-14 flex max-w-[1440px] flex-col gap-2 border-t border-white/15 pt-6 text-[10px] tracking-[0.18em] uppercase text-white/35 md:flex-row md:justify-between">
-          <span>© {new Date().getFullYear()} The Voice Room by AMP Studios</span>
+          <span className="break-words">© {new Date().getFullYear()} The Voice Room by AMP Studios</span>
           <span>Nairobi</span>
         </div>
       </footer>

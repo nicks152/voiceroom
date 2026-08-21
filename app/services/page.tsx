@@ -117,8 +117,10 @@ function ServicesContent() {
           >
             Services
           </motion.p>
-          <h1 className="display mt-3 max-w-3xl text-5xl font-extrabold uppercase md:text-6xl">
-            <HeroLine delay={0.1}>End-to-end voice production</HeroLine>
+          <h1 className="display mt-3 max-w-3xl min-w-0 text-[clamp(1.65rem,7.6vw,3rem)] font-extrabold uppercase md:text-6xl">
+            <HeroLine delay={0.1}>End-to-end</HeroLine>
+            <HeroLine delay={0.16}>voice</HeroLine>
+            <HeroLine delay={0.22}>production</HeroLine>
           </h1>
           <motion.p
             className="mt-5 max-w-xl text-lg text-[var(--c4-muted)]"
@@ -158,7 +160,7 @@ function ServicesContent() {
         <div className="mx-auto max-w-[1440px]">
           <Reveal>
             <p className="c4-label">Our Process</p>
-            <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+            <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase md:text-4xl">
               From brief to delivery
             </h2>
           </Reveal>
@@ -187,7 +189,7 @@ function ServicesContent() {
                 as="article"
                 className="flex h-full flex-col bg-[var(--c4-white)] p-6 md:p-8"
               >
-                <h2 className="display text-xl font-bold uppercase md:text-2xl">
+                <h2 className="display text-[clamp(1.15rem,4.5vw,1.25rem)] font-bold uppercase md:text-2xl">
                   {service.title}
                 </h2>
                 <p className="mt-2 text-sm font-medium">{service.subtitle}</p>
@@ -204,7 +206,7 @@ function ServicesContent() {
         <div className="mx-auto max-w-[1440px]">
           <Reveal>
             <p className="c4-label text-[var(--c4-muted)]">Why Us</p>
-            <h2 className="display mt-3 text-3xl font-extrabold uppercase">
+            <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase">
               Why The Voice Room
             </h2>
           </Reveal>
@@ -225,7 +227,7 @@ function ServicesContent() {
       <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="display text-3xl font-extrabold uppercase md:text-4xl">
+            <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase md:text-4xl">
               Need a voice for your next project?
             </h2>
             <p className="mt-3 text-white/60">

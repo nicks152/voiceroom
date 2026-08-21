@@ -66,7 +66,7 @@ export default function RosterPage() {
         <HeroLine>
           <span className="c4-sticker c4-block-yellow">Roster</span>
         </HeroLine>
-        <h1 className="display mt-6 text-5xl font-extrabold uppercase md:text-7xl">
+        <h1 className="display mt-6 min-w-0 text-[clamp(1.85rem,8.5vw,3rem)] font-extrabold uppercase md:text-7xl">
           <HeroLine delay={0.1}>Voice Roster</HeroLine>
         </h1>
         <Reveal delay={0.18}>
