@@ -91,8 +91,8 @@ function ProfileContent({ id }: { id: string }) {
         ← Roster
       </Link>
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-        <div>
+      <div className="mt-8 grid min-w-0 gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
             {talent.featured ? (
               <span className="c4-block-cobalt px-2 py-0.5 text-[9px] tracking-[0.14em] uppercase">
@@ -107,7 +107,7 @@ function ProfileContent({ id }: { id: string }) {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="display mt-5 text-5xl font-extrabold uppercase leading-none md:text-7xl"
+            className="display mt-5 min-w-0 text-[clamp(1.35rem,7vw,3rem)] font-extrabold uppercase leading-[0.98] md:text-7xl"
           >
             {name}
           </motion.h1>
@@ -183,18 +183,18 @@ function ProfileContent({ id }: { id: string }) {
           </button>
         </div>
 
-          <aside className="h-fit border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] p-6 md:p-8">
+          <aside className="h-fit min-w-0 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] p-6 md:p-8">
             <p className="c4-label">Details</p>
             <dl className="mt-6 space-y-5 text-sm">
-              <div>
+              <div className="min-w-0">
                 <dt className="c4-label text-[var(--c4-black)]/50">Languages</dt>
-                <dd className="display mt-1 text-lg font-bold uppercase">
+                <dd className="display mt-1 text-lg font-bold uppercase break-words">
                   {(talent.languages || []).join(", ") || "—"}
                 </dd>
               </div>
-              <div>
+              <div className="min-w-0">
                 <dt className="c4-label text-[var(--c4-black)]/50">Voice tags</dt>
-                <dd className="mt-1">{(talent.tags || []).join(" · ") || "—"}</dd>
+                <dd className="mt-1 break-words">{(talent.tags || []).join(" · ") || "—"}</dd>
               </div>
               <div>
                 <dt className="c4-label text-[var(--c4-black)]/50">Gender</dt>
@@ -210,7 +210,7 @@ function ProfileContent({ id }: { id: string }) {
 
         {similar.length > 0 ? (
           <section className="mt-24 border-t-2 border-[var(--c4-black)] pt-16">
-            <h2 className="display text-3xl font-extrabold uppercase md:text-4xl">
+            <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase md:text-4xl">
               Similar voices
             </h2>
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">

@@ -31,13 +31,13 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.2, margin: "0px 0px -6% 0px" }}
       transition={{ duration: 0.75, delay: index * 0.06, ease: easeLuxury }}
-      className={`group relative border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-colors hover:bg-[var(--c4-yellow)] ${
+      className={`group relative min-w-0 border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-colors hover:bg-[var(--c4-yellow)] ${
         isGrid
           ? "flex flex-col p-5"
           : "grid gap-6 p-5 md:grid-cols-[1fr_1.1fr] md:items-center md:gap-10 md:p-6"
       }`}
     >
-      <div>
+      <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           {talent.featured ? (
             <span className="c4-block-cobalt px-2 py-0.5 text-[9px] tracking-[0.14em] uppercase">
@@ -55,7 +55,7 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
           ) : null}
         </div>
 
-        <h3 className="display mt-3 text-2xl font-extrabold uppercase leading-none tracking-tight md:text-4xl">
+        <h3 className="display mt-3 min-w-0 text-[clamp(1.35rem,5.5vw,1.5rem)] font-extrabold uppercase leading-[1.05] tracking-tight md:text-4xl">
           <Link href={`/roster/${talent.id}`} className="hover:text-[var(--c4-cobalt)]">
             {name}
           </Link>

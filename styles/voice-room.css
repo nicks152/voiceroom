@@ -19,6 +19,23 @@
 
 .voice-room .display {
   font-family: var(--font-vr-display), system-ui, sans-serif;
+  /* Prefer normal wrapping; only break long glyphs when they would overflow */
+  overflow-wrap: break-word;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Prevent grid/flex min-content from expanding the page past the viewport */
+.voice-room main,
+.voice-room footer {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.voice-room main > *,
+.voice-room footer > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .voice-room ::selection {

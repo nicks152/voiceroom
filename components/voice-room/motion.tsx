@@ -228,12 +228,12 @@ export function HeroLine({
 }) {
   const reduce = useReducedMotion()
   if (reduce) {
-    return <span className={`block ${className || ""}`}>{children}</span>
+    return <span className={`block min-w-0 max-w-full ${className || ""}`}>{children}</span>
   }
 
   return (
     <motion.span
-      className={`block ${className || ""}`}
+      className={`block min-w-0 max-w-full ${className || ""}`}
       initial={{ opacity: 0, y: "0.55em" }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, delay, ease: easeLuxury }}
