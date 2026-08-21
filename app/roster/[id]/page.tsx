@@ -107,7 +107,7 @@ function ProfileContent({ id }: { id: string }) {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="display mt-5 min-w-0 text-[clamp(1.75rem,8vw,3rem)] font-extrabold uppercase leading-[0.98] md:text-7xl"
+            className="display mt-5 min-w-0 text-[clamp(1.35rem,7vw,3rem)] font-extrabold uppercase leading-[0.98] md:text-7xl"
           >
             {name}
           </motion.h1>

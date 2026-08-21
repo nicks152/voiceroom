@@ -19,9 +19,8 @@
 
 .voice-room .display {
   font-family: var(--font-vr-display), system-ui, sans-serif;
-  /* Syne extrabold uppercase glyphs are wide — allow wrap/break instead of clipping */
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  /* Prefer normal wrapping; only break long glyphs when they would overflow */
+  overflow-wrap: break-word;
   min-width: 0;
   max-width: 100%;
 }
