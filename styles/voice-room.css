@@ -19,6 +19,24 @@
 
 .voice-room .display {
   font-family: var(--font-vr-display), system-ui, sans-serif;
+  /* Syne extrabold uppercase glyphs are wide — wrap instead of clipping */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Clip lateral reveal offsets / wide glyphs without hiding vertical scroll */
+.voice-room main,
+.voice-room footer {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.voice-room main > *,
+.voice-room footer > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .voice-room ::selection {
@@ -30,6 +48,13 @@
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+}
+
+/* Soften wide tracking on long label phrases at phone widths */
+@media (max-width: 639px) {
+  .voice-room .c4-label {
+    letter-spacing: 0.12em;
+  }
 }
 
 .voice-room .c4-block-yellow {

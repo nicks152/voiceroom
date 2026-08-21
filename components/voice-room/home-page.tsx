@@ -99,7 +99,7 @@ export function HomePage() {
           </motion.div>
 
           <div className="relative z-10 mx-auto max-w-[1440px] px-5 py-12 md:px-10 md:py-16 lg:py-20">
-            <div className="max-w-xl lg:max-w-[34rem] xl:max-w-[38rem]">
+            <div className="min-w-0 max-w-xl lg:max-w-[34rem] xl:max-w-[38rem]">
               <motion.p
                 className="c4-label text-[var(--c4-black)]/55"
                 initial={{ opacity: 0, y: 12 }}
@@ -108,7 +108,7 @@ export function HomePage() {
               >
                 East Africa&apos;s voiceover roster
               </motion.p>
-              <h1 className="display mt-5 text-[clamp(2.75rem,6vw,4.75rem)] font-extrabold uppercase leading-[1.02] tracking-[-0.03em]">
+              <h1 className="display mt-5 min-w-0 break-words text-[clamp(2rem,8.5vw,4.75rem)] font-extrabold uppercase leading-[1.05] tracking-tight">
                 <HeroLine delay={0.28}>East Africa</HeroLine>
                 <HeroLine delay={0.36}>sounds</HeroLine>
                 <HeroLine delay={0.44} className="relative z-20 text-[var(--c4-cobalt)]">
@@ -194,7 +194,7 @@ export function HomePage() {
             <Reveal className="mb-10 flex flex-col gap-4 border-b-2 border-[var(--c4-black)] pb-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="c4-label text-[var(--c4-muted)]">Our Roster</p>
-                <h2 className="display mt-2 text-4xl font-extrabold uppercase md:text-5xl">
+                <h2 className="display mt-2 text-[clamp(1.75rem,7vw,3rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
                   Featured Artists
                 </h2>
               </div>
@@ -205,7 +205,7 @@ export function HomePage() {
                 View full roster →
               </Link>
             </Reveal>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               {featured.map((t, i) => (
                 <VoiceRoomCard key={t.id} talent={t} index={i} variant="grid" />
               ))}
@@ -220,7 +220,7 @@ export function HomePage() {
           <div className="mx-auto max-w-[1440px]">
             <Reveal>
               <p className="c4-label mb-3">Our Process</p>
-              <h2 className="display max-w-2xl text-3xl font-extrabold uppercase md:text-5xl">
+              <h2 className="display max-w-2xl text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
                 A seamless process from brief to delivery
               </h2>
             </Reveal>
@@ -244,7 +244,7 @@ export function HomePage() {
           <div className="mx-auto mb-12 grid max-w-[1440px] gap-12 px-5 md:px-10 lg:grid-cols-2">
             <Reveal variant="left">
               <p className="c4-label text-white/50">AMP Studios</p>
-              <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-5xl">
+              <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
                 Recorded at AMP Studios
               </h2>
               <p className="mt-5 text-lg text-white/65">
@@ -312,7 +312,7 @@ export function HomePage() {
           <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-2">
             <Reveal variant="left">
               <p className="c4-label text-[var(--c4-muted)]">Services</p>
-              <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-5xl">
+              <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
                 End-to-end voice production
               </h2>
               <p className="mt-5 max-w-md leading-relaxed text-[var(--c4-muted)]">
@@ -325,7 +325,7 @@ export function HomePage() {
                 View All Services
               </Link>
             </Reveal>
-            <Stagger className="grid grid-cols-2 gap-3" stagger={0.06} variant="scale">
+            <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2" stagger={0.06} variant="scale">
               {services.map((service) => (
                 <div
                   key={service}
@@ -343,7 +343,7 @@ export function HomePage() {
             <div className="max-w-3xl">
               <Reveal>
                 <p className="c4-label text-[var(--c4-muted)]">Why Us</p>
-                <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-5xl">
+                <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
                   Why The Voice Room
                 </h2>
               </Reveal>
@@ -364,7 +364,7 @@ export function HomePage() {
 
         <Reveal as="section" variant="scale" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
           <div className="mx-auto max-w-[1440px] text-center">
-            <h2 className="display text-3xl font-extrabold uppercase md:text-5xl">
+            <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-5xl">
               Need a voice for your next project?
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-lg text-white/65">

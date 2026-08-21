@@ -173,7 +173,7 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
       />
 
       <div
-        className={`relative mx-4 max-h-[90vh] w-full max-w-2xl overflow-y-auto border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-all duration-400 ease-out ${
+        className={`relative mx-4 max-h-[90vh] w-full max-w-2xl min-w-0 overflow-x-hidden overflow-y-auto border-2 border-[var(--c4-black)] bg-[var(--c4-white)] transition-all duration-400 ease-out ${
           isVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-8 scale-95 opacity-0"
@@ -185,14 +185,14 @@ export function ApplyModal({ isOpen, onClose }: ApplyModalProps) {
           type="button"
           onClick={handleClose}
           aria-label="Close"
-          className="absolute top-5 right-5 z-10 flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
+          className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)] sm:top-5 sm:right-5"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="p-8 pt-10 lg:p-12">
+        <div className="p-5 pt-14 sm:p-8 sm:pt-12 lg:p-12">
           <span className="c4-sticker c4-block-yellow">Apply</span>
-          <h2 className="display mt-5 text-3xl font-extrabold uppercase leading-none tracking-tight md:text-5xl">
+          <h2 className="display mt-5 pr-12 text-[clamp(1.5rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] tracking-tight md:text-5xl">
             Join Our Roster
           </h2>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-[var(--c4-muted)]">

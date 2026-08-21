@@ -31,7 +31,7 @@ export default function Concept4AboutPage() {
       <main>
         <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10 md:py-20">
           <div className="mx-auto max-w-[1440px]">
-            <h1 className="display text-5xl font-extrabold uppercase md:text-6xl">
+            <h1 className="display min-w-0 text-[clamp(1.85rem,8vw,3rem)] font-extrabold uppercase leading-[1.05] md:text-6xl">
               <HeroLine>Find Your Voice</HeroLine>
             </h1>
             <motion.p
@@ -60,10 +60,10 @@ export default function Concept4AboutPage() {
         </section>
 
         <section className="border-b-2 border-[var(--c4-black)] px-5 py-16 md:px-10 md:py-24">
-          <div className="mx-auto grid max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-20">
+          <div className="mx-auto grid max-w-[1440px] min-w-0 gap-12 lg:grid-cols-2 lg:gap-20">
             <Reveal variant="left">
               <p className="c4-label text-[var(--c4-muted)]">Our Story</p>
-              <h2 className="display mt-4 text-3xl font-extrabold uppercase md:text-4xl">
+              <h2 className="display mt-4 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-4xl">
                 Created by AMP Studios in Nairobi
               </h2>
             </Reveal>
@@ -88,11 +88,11 @@ export default function Concept4AboutPage() {
           <div className="mx-auto max-w-[1440px]">
             <Reveal>
               <p className="c4-label">What We Offer</p>
-              <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+              <h2 className="display mt-3 text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-4xl">
                 Excellence at every step
               </h2>
             </Reveal>
-            <Stagger className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
+            <Stagger className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
               {offerings.map((offering, index) => (
                 <div key={offering.title} className="border-t-2 border-[var(--c4-black)] pt-5">
                   <span className="c4-label">0{index + 1}</span>
@@ -108,7 +108,7 @@ export default function Concept4AboutPage() {
 
         <Reveal as="section" variant="scale" className="border-b-2 border-[var(--c4-black)] px-5 py-20 md:px-10 md:py-28">
           <div className="mx-auto max-w-[1440px]">
-            <p className="mx-auto max-w-3xl text-center display text-2xl font-bold uppercase leading-relaxed md:text-4xl">
+            <p className="mx-auto max-w-3xl text-center display text-[clamp(1.25rem,5.5vw,1.5rem)] font-bold uppercase leading-relaxed md:text-4xl">
               At The Voice Room, we don&apos;t just provide voiceovers — we create room for
               brands to find their voice, and <em className="normal-case">own it.</em>
             </p>
@@ -118,7 +118,7 @@ export default function Concept4AboutPage() {
         <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="display text-3xl font-extrabold uppercase md:text-4xl">
+              <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-4xl">
                 Ready to find your voice?
               </h2>
               <p className="mt-3 max-w-md text-white/60">
