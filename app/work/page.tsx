@@ -119,7 +119,7 @@ function WorkContent() {
           <p className="c4-label text-[var(--c4-muted)]">
             <HeroLine>Work</HeroLine>
           </p>
-          <h1 className="display mt-3 text-5xl font-extrabold uppercase md:text-6xl">
+          <h1 className="display mt-3 min-w-0 text-[clamp(1.85rem,8.5vw,3rem)] font-extrabold uppercase leading-[1.05] md:text-6xl">
             <HeroLine delay={0.1}>Featured Work</HeroLine>
           </h1>
           <Reveal delay={0.18}>
@@ -162,7 +162,7 @@ function WorkContent() {
             <p className="c4-label text-[var(--c4-muted)]">
               {featuredProject.year} · {featuredProject.category} · {featuredProject.client}
             </p>
-            <h2 className="display mt-3 text-3xl font-extrabold uppercase md:text-4xl">
+            <h2 className="display mt-3 text-[clamp(1.5rem,6vw,1.875rem)] font-extrabold uppercase leading-[1.05] md:text-4xl">
               {featuredProject.title}
             </h2>
             <p className="mt-5 text-sm leading-relaxed text-[var(--c4-muted)] md:text-base">
@@ -183,10 +183,10 @@ function WorkContent() {
       </section>
 
       <Reveal as="section" className="border-b-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] px-5 py-14 md:px-10 md:py-16">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-10 md:grid-cols-4 md:gap-8">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
           {stats.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.06} variant="scale" className="text-center">
-              <p className="display text-4xl font-extrabold uppercase leading-none tracking-tight md:text-5xl lg:text-6xl">
+              <p className="display text-[clamp(1.75rem,8vw,2.25rem)] font-extrabold uppercase leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
                 {stat.value}
               </p>
               <p className="c4-label mt-3 text-[var(--c4-black)]/60">{stat.label}</p>
@@ -198,7 +198,7 @@ function WorkContent() {
       <section className="border-b-2 border-[var(--c4-black)] px-5 py-14 md:px-10">
         <div className="mx-auto max-w-[1440px]">
           <Reveal>
-            <h2 className="display text-3xl font-extrabold uppercase">Case Studies</h2>
+            <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05]">Case Studies</h2>
           </Reveal>
           <Stagger className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3" stagger={0.1} variant="scale">
             {caseStudies.map((study) => {
@@ -259,7 +259,7 @@ function WorkContent() {
                     <p className="c4-label text-[var(--c4-muted)]">
                       {study.year} · {study.category}
                     </p>
-                    <h3 className="display mt-2 text-xl font-bold uppercase leading-tight">
+                    <h3 className="display mt-2 text-[clamp(1.05rem,4.2vw,1.25rem)] font-bold uppercase leading-[1.05]">
                       {study.title}
                     </h3>
                     <p className="mt-3 text-sm text-[var(--c4-muted)]">{study.description}</p>
@@ -284,7 +284,7 @@ function WorkContent() {
       <Reveal as="section" className="c4-block-black px-5 py-16 md:px-10 md:py-20">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="display text-3xl font-extrabold uppercase">
+            <h2 className="display text-[clamp(1.65rem,6.5vw,1.875rem)] font-extrabold uppercase leading-[1.05]">
               Have a project in mind?
             </h2>
             <p className="mt-3 text-white/60">

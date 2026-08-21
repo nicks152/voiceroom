@@ -26,8 +26,9 @@ type RevealProps = {
 const variants = {
   up: { hidden: { opacity: 0, y: 36 }, show: { opacity: 1, y: 0 } },
   fade: { hidden: { opacity: 0 }, show: { opacity: 1 } },
-  left: { hidden: { opacity: 0, x: -28 }, show: { opacity: 1, x: 0 } },
-  right: { hidden: { opacity: 0, x: 28 }, show: { opacity: 1, x: 0 } },
+  /* Keep lateral travel small so mobile viewport does not overflow-x */
+  left: { hidden: { opacity: 0, x: -12 }, show: { opacity: 1, x: 0 } },
+  right: { hidden: { opacity: 0, x: 12 }, show: { opacity: 1, x: 0 } },
   scale: {
     hidden: { opacity: 0, scale: 0.96, y: 18 },
     show: { opacity: 1, scale: 1, y: 0 },
@@ -228,12 +229,12 @@ export function HeroLine({
 }) {
   const reduce = useReducedMotion()
   if (reduce) {
-    return <span className={`block ${className || ""}`}>{children}</span>
+    return <span className={`block min-w-0 max-w-full ${className || ""}`}>{children}</span>
   }
 
   return (
     <motion.span
-      className={`block ${className || ""}`}
+      className={`block min-w-0 max-w-full ${className || ""}`}
       initial={{ opacity: 0, y: "0.55em" }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, delay, ease: easeLuxury }}

@@ -18,12 +18,14 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <FavoritesProvider>
       <InquiryProvider>
         <FilterProvider>
-          {isHome ? <HomeLoader /> : <PageLoader />}
-          <ScrollProgress />
-          <CustomCursor />
-          <VoiceRoomNav />
-          <PageEnter>{children}</PageEnter>
-          <VoiceRoomFooter />
+          <div className="voice-room-shell min-w-0 max-w-[100vw] overflow-x-clip">
+            {isHome ? <HomeLoader /> : <PageLoader />}
+            <ScrollProgress />
+            <CustomCursor />
+            <VoiceRoomNav />
+            <PageEnter>{children}</PageEnter>
+            <VoiceRoomFooter />
+          </div>
         </FilterProvider>
       </InquiryProvider>
     </FavoritesProvider>
