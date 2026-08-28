@@ -1,41 +1,66 @@
+const CHUNK_SIZE = 3 * 1024 * 1024 // 3MB — under Vercel’s ~4.5MB limit
+
 /**
- * Upload an audio file to Supabase Storage.
- * Uses a signed URL so the browser talks to storage directly (bypasses Vercel 4.5MB limit).
+ * Upload audio via same-origin chunked API (no browser→Supabase CORS).
  */
 export async function uploadAudioFile(file: File, talentId?: string) {
-  const prepRes = await fetch("/api/upload-audio", {
+  const initRes = await fetch("/api/upload-audio", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      action: "init",
       fileName: file.name,
       contentType: file.type || "audio/mpeg",
       talent_id: talentId,
+      size: file.size,
     }),
   })
 
-  const prep = await prepRes.json().catch(() => ({}))
-  if (!prepRes.ok || prep.error || !prep.signedUrl) {
-    throw new Error(prep.error || `Failed to prepare upload (${prepRes.status})`)
+  const init = await initRes.json().catch(() => ({}))
+  if (!initRes.ok || init.error || !init.uploadId || !init.finalPath) {
+    throw new Error(init.error || `Failed to start upload (${initRes.status})`)
   }
 
-  // PUT straight to the signed URL — avoids upsert/token mismatches in uploadToSignedUrl
-  const putRes = await fetch(prep.signedUrl as string, {
-    method: "PUT",
-    headers: {
-      "Content-Type": (prep.contentType as string) || file.type || "audio/mpeg",
-    },
-    body: file,
+  const totalChunks = Math.max(1, Math.ceil(file.size / CHUNK_SIZE))
+
+  for (let i = 0; i < totalChunks; i++) {
+    const blob = file.slice(i * CHUNK_SIZE, Math.min(file.size, (i + 1) * CHUNK_SIZE))
+    const formData = new FormData()
+    formData.append("action", "chunk")
+    formData.append("uploadId", init.uploadId)
+    formData.append("index", String(i))
+    formData.append("chunk", blob, `chunk-${i}`)
+
+    const chunkRes = await fetch("/api/upload-audio", {
+      method: "POST",
+      body: formData,
+    })
+    const chunkData = await chunkRes.json().catch(() => ({}))
+    if (!chunkRes.ok || chunkData.error) {
+      throw new Error(chunkData.error || `Failed to upload chunk ${i + 1}/${totalChunks}`)
+    }
+  }
+
+  const completeRes = await fetch("/api/upload-audio", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "complete",
+      uploadId: init.uploadId,
+      finalPath: init.finalPath,
+      fileName: file.name,
+      contentType: init.contentType || file.type || "audio/mpeg",
+      totalChunks,
+    }),
   })
 
-  if (!putRes.ok) {
-    const detail = await putRes.text().catch(() => "")
-    throw new Error(
-      detail || `Storage rejected upload (${putRes.status}). Check file type/size and try again.`
-    )
+  const complete = await completeRes.json().catch(() => ({}))
+  if (!completeRes.ok || complete.error || !complete.url) {
+    throw new Error(complete.error || `Failed to finalize upload (${completeRes.status})`)
   }
 
   return {
-    url: prep.publicUrl as string,
-    path: prep.path as string,
+    url: complete.url as string,
+    path: complete.path as string,
   }
 }
