@@ -1447,6 +1447,11 @@ export default function DashboardPage() {
                                         file_url: uploadData.url,
                                         title: file.name,
                                         duration_sec: durationSec,
+                                        age_band: talent.age_band,
+                                        gender: talent.gender,
+                                        languages: talent.languages || [],
+                                        tags: talent.tags || [],
+                                        styles: talent.tags || [],
                                       }),
                                     })
                                   })
