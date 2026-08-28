@@ -1,66 +1,105 @@
-const CHUNK_SIZE = 3 * 1024 * 1024 // 3MB — under Vercel’s ~4.5MB limit
+const CHUNK_SIZE = 512 * 1024 // 512KB — safe for Vercel + typical nginx limits
+const UPLOAD_VERSION = "tus-proxy-v1"
+
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer)
+  let binary = ""
+  const step = 0x8000
+  for (let i = 0; i < bytes.length; i += step) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + step))
+  }
+  return btoa(binary)
+}
+
+async function postJson(url: string, body: unknown, step: string) {
+  let res: Response
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Failed to fetch"
+    throw new Error(`[${UPLOAD_VERSION}] ${step}: ${msg}`)
+  }
+
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || data.error) {
+    throw new Error(
+      `[${UPLOAD_VERSION}] ${step}: ${data.error || `HTTP ${res.status}`}`
+    )
+  }
+  return data
+}
 
 /**
- * Upload audio via same-origin chunked API (no browser→Supabase CORS).
+ * Same-origin upload that proxies TUS resumable uploads to Supabase Storage.
+ * Keeps every request small (no Vercel/nginx "entity too large").
  */
 export async function uploadAudioFile(file: File, talentId?: string) {
-  const initRes = await fetch("/api/upload-audio", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const endpoint =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/api/upload-audio`
+      : "/api/upload-audio"
+
+  const init = await postJson(
+    endpoint,
+    {
       action: "init",
       fileName: file.name,
       contentType: file.type || "audio/mpeg",
       talent_id: talentId,
       size: file.size,
-    }),
-  })
+    },
+    "start upload"
+  )
 
-  const init = await initRes.json().catch(() => ({}))
-  if (!initRes.ok || init.error || !init.uploadId || !init.finalPath) {
-    throw new Error(init.error || `Failed to start upload (${initRes.status})`)
+  if (!init.uploadUrl || !init.publicUrl || !init.path) {
+    throw new Error(`[${UPLOAD_VERSION}] start upload: invalid server response`)
   }
 
-  const totalChunks = Math.max(1, Math.ceil(file.size / CHUNK_SIZE))
+  let offset = 0
+  let part = 0
+  const totalParts = Math.max(1, Math.ceil(file.size / CHUNK_SIZE))
 
-  for (let i = 0; i < totalChunks; i++) {
-    const blob = file.slice(i * CHUNK_SIZE, Math.min(file.size, (i + 1) * CHUNK_SIZE))
-    const formData = new FormData()
-    formData.append("action", "chunk")
-    formData.append("uploadId", init.uploadId)
-    formData.append("index", String(i))
-    formData.append("chunk", blob, `chunk-${i}`)
+  while (offset < file.size) {
+    part += 1
+    const end = Math.min(file.size, offset + CHUNK_SIZE)
+    const blob = file.slice(offset, end)
+    const base64 = arrayBufferToBase64(await blob.arrayBuffer())
 
-    const chunkRes = await fetch("/api/upload-audio", {
-      method: "POST",
-      body: formData,
-    })
-    const chunkData = await chunkRes.json().catch(() => ({}))
-    if (!chunkRes.ok || chunkData.error) {
-      throw new Error(chunkData.error || `Failed to upload chunk ${i + 1}/${totalChunks}`)
+    const chunk = await postJson(
+      endpoint,
+      {
+        action: "chunk",
+        uploadUrl: init.uploadUrl,
+        offset,
+        data: base64,
+      },
+      `upload part ${part}/${totalParts}`
+    )
+
+    const nextOffset = Number(chunk.offset)
+    if (!Number.isFinite(nextOffset) || nextOffset <= offset) {
+      throw new Error(`[${UPLOAD_VERSION}] upload part ${part}/${totalParts}: bad offset`)
     }
+    offset = nextOffset
   }
 
-  const completeRes = await fetch("/api/upload-audio", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const complete = await postJson(
+    endpoint,
+    {
       action: "complete",
-      uploadId: init.uploadId,
-      finalPath: init.finalPath,
-      fileName: file.name,
-      contentType: init.contentType || file.type || "audio/mpeg",
-      totalChunks,
-    }),
-  })
-
-  const complete = await completeRes.json().catch(() => ({}))
-  if (!completeRes.ok || complete.error || !complete.url) {
-    throw new Error(complete.error || `Failed to finalize upload (${completeRes.status})`)
-  }
+      publicUrl: init.publicUrl,
+      path: init.path,
+    },
+    "finalize upload"
+  )
 
   return {
-    url: complete.url as string,
-    path: complete.path as string,
+    url: (complete.url as string) || (init.publicUrl as string),
+    path: (complete.path as string) || (init.path as string),
   }
 }
