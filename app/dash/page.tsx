@@ -1446,8 +1446,13 @@ export default function DashboardPage() {
                                       }),
                                     })
                                   )
-                                  .then((res) => res.json())
-                                  .then(() => fetch("/api/talent"))
+                                  .then(async (res) => {
+                                    const data = await res.json()
+                                    if (!res.ok || data.error) {
+                                      throw new Error(data.error || "Failed to save sample record")
+                                    }
+                                    return fetch("/api/talent")
+                                  })
                                   .then((res) => res.json())
                                   .then((talentData) => {
                                     if (!talentData.error) setTalents(talentData.talent || [])

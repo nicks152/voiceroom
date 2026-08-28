@@ -1,8 +1,6 @@
-import { createClient } from "@/lib/supabase/client"
-
 /**
- * Upload an audio file directly to Supabase Storage via a signed URL
- * from /api/upload-audio (avoids Vercel request body limits).
+ * Upload an audio file to Supabase Storage.
+ * Uses a signed URL so the browser talks to storage directly (bypasses Vercel 4.5MB limit).
  */
 export async function uploadAudioFile(file: File, talentId?: string) {
   const prepRes = await fetch("/api/upload-audio", {
@@ -15,21 +13,25 @@ export async function uploadAudioFile(file: File, talentId?: string) {
     }),
   })
 
-  const prep = await prepRes.json()
-  if (!prepRes.ok || prep.error) {
-    throw new Error(prep.error || "Failed to prepare upload")
+  const prep = await prepRes.json().catch(() => ({}))
+  if (!prepRes.ok || prep.error || !prep.signedUrl) {
+    throw new Error(prep.error || `Failed to prepare upload (${prepRes.status})`)
   }
 
-  const supabase = createClient()
-  const { error } = await supabase.storage
-    .from("audio-files")
-    .uploadToSignedUrl(prep.path, prep.token, file, {
-      contentType: prep.contentType || file.type || "audio/mpeg",
-      upsert: true,
-    })
+  // PUT straight to the signed URL — avoids upsert/token mismatches in uploadToSignedUrl
+  const putRes = await fetch(prep.signedUrl as string, {
+    method: "PUT",
+    headers: {
+      "Content-Type": (prep.contentType as string) || file.type || "audio/mpeg",
+    },
+    body: file,
+  })
 
-  if (error) {
-    throw new Error(error.message || "Failed to upload audio file")
+  if (!putRes.ok) {
+    const detail = await putRes.text().catch(() => "")
+    throw new Error(
+      detail || `Storage rejected upload (${putRes.status}). Check file type/size and try again.`
+    )
   }
 
   return {
