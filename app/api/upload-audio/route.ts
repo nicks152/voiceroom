@@ -1,33 +1,42 @@
-import { createAdminClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { randomUUID } from "crypto"
 
 export const maxDuration = 60
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
 
-const MAX_CHUNK_BYTES = 3.5 * 1024 * 1024 // under Vercel’s ~4.5MB body limit
+const BUCKET = "audio-files"
+/** Binary chunk size from the browser (base64 expands ~33%; stay under Vercel 4.5MB). */
+const MAX_CHUNK_BYTES = 512 * 1024
+
+function storageConfig() {
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!baseUrl || !key) {
+    throw new Error("Supabase storage is not configured")
+  }
+  return { baseUrl: baseUrl.replace(/\/$/, ""), key }
+}
+
+function b64(value: string) {
+  return Buffer.from(value).toString("base64")
+}
 
 /**
- * Chunked audio upload (avoids Vercel body limit AND browser→storage CORS).
+ * Resumable (TUS) upload proxied through this API so:
+ * - browser never hits storage CORS
+ * - no single request exceeds Vercel or nginx body limits
  *
- * JSON:
- *   { action: "init", fileName, contentType } → { uploadId }
- *   { action: "complete", uploadId, fileName, contentType, totalChunks } → { url, path }
- *
- * multipart:
- *   action=chunk, uploadId, index, chunk=<File>
+ * init     → start TUS session
+ * chunk    → PATCH next bytes (base64)
+ * complete → return public URL (TUS finishes when Upload-Length is reached)
  */
 export async function POST(request: Request) {
   try {
-    const contentType = request.headers.get("content-type") || ""
-
-    if (contentType.includes("multipart/form-data")) {
-      return await handleChunk(request)
-    }
-
     const body = await request.json()
-    if (body.action === "complete") {
-      return await handleComplete(body)
-    }
+    const action = body.action || "init"
+
+    if (action === "chunk") return await handleChunk(body)
+    if (action === "complete") return await handleComplete(body)
     return await handleInit(body)
   } catch (error) {
     console.error("Upload error:", error)
@@ -41,101 +50,129 @@ export async function POST(request: Request) {
 async function handleInit(body: {
   fileName?: string
   contentType?: string
-  action?: string
+  size?: number
 }) {
+  const { baseUrl, key } = storageConfig()
   const originalName = body.fileName || "sample.mp3"
-  const uploadId = randomUUID()
+  const contentType = body.contentType || "audio/mpeg"
+  const size = Number(body.size || 0)
+
+  if (!size || size < 1) {
+    return NextResponse.json({ error: "Missing file size" }, { status: 400 })
+  }
+
   const ext = originalName.split(".").pop()?.toLowerCase() || "mp3"
-  const finalPath = `talent-samples/${Date.now()}-${uploadId.slice(0, 8)}.${ext}`
+  const path = `talent-samples/${Date.now()}.${ext}`
+
+  const metadata = [
+    `bucketName ${b64(BUCKET)}`,
+    `objectName ${b64(path)}`,
+    `contentType ${b64(contentType)}`,
+    `cacheControl ${b64("3600")}`,
+  ].join(",")
+
+  const createRes = await fetch(`${baseUrl}/storage/v1/upload/resumable`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      apikey: key,
+      "Tus-Resumable": "1.0.0",
+      "Upload-Length": String(size),
+      "Upload-Metadata": metadata,
+      "x-upsert": "true",
+    },
+  })
+
+  if (!createRes.ok) {
+    const detail = await createRes.text().catch(() => "")
+    console.error("TUS create failed:", createRes.status, detail)
+    return NextResponse.json(
+      { error: detail || `Failed to start resumable upload (${createRes.status})` },
+      { status: 500 }
+    )
+  }
+
+  const uploadUrl = createRes.headers.get("Location")
+  if (!uploadUrl) {
+    return NextResponse.json(
+      { error: "Storage did not return an upload URL" },
+      { status: 500 }
+    )
+  }
+
+  // Absolute Location preferred; some stacks return relative
+  const absoluteUploadUrl = uploadUrl.startsWith("http")
+    ? uploadUrl
+    : `${baseUrl}${uploadUrl.startsWith("/") ? "" : "/"}${uploadUrl}`
+
+  const publicUrl = `${baseUrl}/storage/v1/object/public/${BUCKET}/${path}`
 
   return NextResponse.json({
-    uploadId,
-    finalPath,
-    contentType: body.contentType || "audio/mpeg",
+    uploadUrl: absoluteUploadUrl,
+    path,
+    publicUrl,
+    contentType,
     chunkSize: MAX_CHUNK_BYTES,
+    version: "tus-proxy-v1",
   })
 }
 
-async function handleChunk(request: Request) {
-  const formData = await request.formData()
-  const uploadId = String(formData.get("uploadId") || "")
-  const index = String(formData.get("index") || "")
-  const chunk = formData.get("chunk")
+async function handleChunk(body: {
+  uploadUrl?: string
+  offset?: number
+  data?: string
+}) {
+  const { baseUrl, key } = storageConfig()
+  const { uploadUrl, data } = body
+  const offset = Number(body.offset)
 
-  if (!uploadId || index === "" || !(chunk instanceof File)) {
+  if (!uploadUrl || !data || Number.isNaN(offset)) {
     return NextResponse.json({ error: "Missing chunk fields" }, { status: 400 })
   }
 
-  if (chunk.size > MAX_CHUNK_BYTES) {
+  const buffer = Buffer.from(data, "base64")
+  if (buffer.byteLength > MAX_CHUNK_BYTES + 2048) {
     return NextResponse.json({ error: "Chunk too large" }, { status: 413 })
   }
 
-  const supabase = createAdminClient()
-  const path = `tmp-uploads/${uploadId}/${index}`
-  const buffer = Buffer.from(await chunk.arrayBuffer())
-
-  const { error } = await supabase.storage.from("audio-files").upload(path, buffer, {
-    contentType: "application/octet-stream",
-    upsert: true,
+  const patchRes = await fetch(uploadUrl, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      apikey: key,
+      "Tus-Resumable": "1.0.0",
+      "Upload-Offset": String(offset),
+      "Content-Type": "application/offset+octet-stream",
+      "Content-Length": String(buffer.byteLength),
+    },
+    body: buffer,
   })
 
-  if (error) {
-    console.error("Chunk upload error:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (!patchRes.ok) {
+    const detail = await patchRes.text().catch(() => "")
+    console.error("TUS patch failed:", patchRes.status, detail)
+    return NextResponse.json(
+      { error: detail || `Chunk upload failed (${patchRes.status})` },
+      { status: 500 }
+    )
   }
 
-  return NextResponse.json({ ok: true, index: Number(index) })
+  const nextOffset = Number(patchRes.headers.get("Upload-Offset") || offset + buffer.byteLength)
+
+  return NextResponse.json({
+    ok: true,
+    offset: nextOffset,
+  })
 }
 
-async function handleComplete(body: {
-  uploadId?: string
-  finalPath?: string
-  fileName?: string
-  contentType?: string
-  totalChunks?: number
-}) {
-  const { uploadId, finalPath, totalChunks } = body
-  if (!uploadId || !finalPath || !totalChunks || totalChunks < 1) {
+async function handleComplete(body: { publicUrl?: string; path?: string }) {
+  if (!body.publicUrl || !body.path) {
     return NextResponse.json({ error: "Missing complete fields" }, { status: 400 })
   }
 
-  const supabase = createAdminClient()
-  const parts: Buffer[] = []
-
-  for (let i = 0; i < totalChunks; i++) {
-    const path = `tmp-uploads/${uploadId}/${i}`
-    const { data, error } = await supabase.storage.from("audio-files").download(path)
-    if (error || !data) {
-      console.error("Chunk download error:", error)
-      return NextResponse.json(
-        { error: error?.message || `Missing chunk ${i}` },
-        { status: 500 }
-      )
-    }
-    parts.push(Buffer.from(await data.arrayBuffer()))
-  }
-
-  const fileBuffer = Buffer.concat(parts)
-  const { error: uploadError } = await supabase.storage
-    .from("audio-files")
-    .upload(finalPath, fileBuffer, {
-      contentType: body.contentType || "audio/mpeg",
-      upsert: true,
-    })
-
-  if (uploadError) {
-    console.error("Final upload error:", uploadError)
-    return NextResponse.json({ error: uploadError.message }, { status: 500 })
-  }
-
-  // Best-effort cleanup of temp chunks
-  const tmpPaths = Array.from({ length: totalChunks }, (_, i) => `tmp-uploads/${uploadId}/${i}`)
-  await supabase.storage.from("audio-files").remove(tmpPaths).catch(() => null)
-
-  const { data: urlData } = supabase.storage.from("audio-files").getPublicUrl(finalPath)
-
+  // TUS marks the object complete when Upload-Length is reached.
   return NextResponse.json({
-    url: urlData.publicUrl,
-    path: finalPath,
+    url: body.publicUrl,
+    path: body.path,
   })
 }
