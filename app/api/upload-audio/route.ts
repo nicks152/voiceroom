@@ -1,51 +1,48 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
+/**
+ * Returns a signed upload URL so the browser can PUT the audio file
+ * straight to Supabase Storage (bypasses Vercel's ~4.5MB body limit).
+ */
 export async function POST(request: Request) {
   try {
-    const supabase = createAdminClient()
-    const formData = await request.formData()
-    
-    const file = formData.get("file") as File
-    const talentId = formData.get("talent_id") as string
-    
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 })
+    const body = await request.json()
+    const originalName = (body.fileName as string) || "sample.mp3"
+    const contentType = (body.contentType as string) || "audio/mpeg"
+
+    if (!originalName) {
+      return NextResponse.json({ error: "No file name provided" }, { status: 400 })
     }
-    
-    // Generate unique filename
+
+    const supabase = createAdminClient()
     const timestamp = Date.now()
-    const ext = file.name.split('.').pop() || 'mp3'
-    const fileName = `talent-samples/${timestamp}.${ext}`
-    
-    // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-    
-    // Upload to Supabase storage
+    const ext = originalName.split(".").pop()?.toLowerCase() || "mp3"
+    const path = `talent-samples/${timestamp}.${ext}`
+
     const { data, error } = await supabase.storage
       .from("audio-files")
-      .upload(fileName, buffer, {
-        contentType: file.type || "audio/mpeg",
-        upsert: true,
-      })
-    
-    if (error) {
-      console.error("Storage upload error:", error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      .createSignedUploadUrl(path)
+
+    if (error || !data) {
+      console.error("Signed upload URL error:", error)
+      return NextResponse.json(
+        { error: error?.message || "Failed to create upload URL" },
+        { status: 500 }
+      )
     }
-    
-    // Get public URL
-    const { data: urlData } = supabase.storage
-      .from("audio-files")
-      .getPublicUrl(fileName)
-    
-    return NextResponse.json({ 
-      url: urlData.publicUrl,
+
+    const { data: urlData } = supabase.storage.from("audio-files").getPublicUrl(path)
+
+    return NextResponse.json({
       path: data.path,
+      token: data.token,
+      signedUrl: data.signedUrl,
+      publicUrl: urlData.publicUrl,
+      contentType,
     })
   } catch (error) {
-    console.error("Upload error:", error)
-    return NextResponse.json({ error: "Failed to upload audio file" }, { status: 500 })
+    console.error("Upload prep error:", error)
+    return NextResponse.json({ error: "Failed to prepare audio upload" }, { status: 500 })
   }
 }
