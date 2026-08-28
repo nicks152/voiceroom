@@ -1,6 +1,24 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
+/** Allowed values for samples.styles (Postgres enum style_type). */
+const STYLE_TYPE = new Set([
+  "authoritative",
+  "documentary",
+  "urban",
+  "announcer",
+  "reporter",
+  "movie",
+  "commercial",
+])
+
+function asStyleList(values: unknown): string[] {
+  if (!Array.isArray(values)) return []
+  return values
+    .map((v) => String(v || "").toLowerCase().trim())
+    .filter((v) => STYLE_TYPE.has(v))
+}
+
 export async function GET(request: Request) {
   try {
     const supabase = createAdminClient()
@@ -42,20 +60,35 @@ export async function POST(request: Request) {
       )
     }
 
-    // Fill required sample fields from the parent talent so NOT NULL cols never blow up
     const { data: talent, error: talentError } = await supabase
       .from("talent")
       .select("age_band, gender, languages, tags")
       .eq("id", body.talent_id)
-      .single()
+      .maybeSingle()
 
-    if (talentError || !talent) {
+    if (talentError) {
       console.error("Talent lookup error:", talentError)
-      return NextResponse.json(
-        { error: talentError?.message || "Talent not found" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: talentError.message }, { status: 400 })
     }
+
+    if (!talent) {
+      return NextResponse.json({ error: "Talent not found" }, { status: 400 })
+    }
+
+    const ageBand = String(body.age_band || talent.age_band || "25-35")
+    const gender = String(body.gender || talent.gender || "MALE")
+    const languages = Array.isArray(body.languages) && body.languages.length
+      ? body.languages
+      : Array.isArray(talent.languages)
+        ? talent.languages
+        : []
+    const tags = Array.isArray(body.tags) && body.tags.length
+      ? body.tags
+      : Array.isArray(talent.tags)
+        ? talent.tags
+        : []
+    // Never copy freeform tags into styles — style_type is a strict enum
+    const styles = asStyleList(body.styles?.length ? body.styles : tags)
 
     const { data, error } = await supabase
       .from("samples")
@@ -64,11 +97,11 @@ export async function POST(request: Request) {
         title: body.title || "Sample",
         file_url: body.file_url,
         duration_sec: body.duration_sec ?? 0,
-        age_band: body.age_band || talent.age_band || "25-35",
-        gender: body.gender || talent.gender || "MALE",
-        languages: body.languages?.length ? body.languages : talent.languages || [],
-        styles: body.styles?.length ? body.styles : talent.tags || [],
-        tags: body.tags?.length ? body.tags : talent.tags || [],
+        age_band: ageBand,
+        gender,
+        languages,
+        styles,
+        tags,
         published: body.published ?? true,
       })
       .select()

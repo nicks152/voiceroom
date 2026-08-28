@@ -1451,7 +1451,6 @@ export default function DashboardPage() {
                                         gender: talent.gender,
                                         languages: talent.languages || [],
                                         tags: talent.tags || [],
-                                        styles: talent.tags || [],
                                       }),
                                     })
                                   })
