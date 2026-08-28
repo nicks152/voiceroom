@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
+import { uploadAudioFile } from "@/lib/upload-audio"
 
 // Sample type - matches Supabase schema
 interface SampleDB {
@@ -394,21 +395,8 @@ export default function DashboardPage() {
     
     setIsUploadingSample(true)
     try {
-      // Upload to Supabase storage
-      const formData = new FormData()
-      formData.append("file", file)
-      formData.append("talent_id", talentId)
-      
-      const uploadRes = await fetch("/api/upload-audio", {
-        method: "POST",
-        body: formData,
-      })
-      const uploadData = await uploadRes.json()
-      
-      if (uploadData.error) {
-        alert("Failed to upload audio: " + uploadData.error)
-        return
-      }
+      // Direct-to-storage upload (signed URL) — avoids Vercel 4.5MB body limit
+      const uploadData = await uploadAudioFile(file, talentId)
       
       // Update the sample record with new file URL
       const updateRes = await fetch("/api/samples", {
@@ -437,7 +425,10 @@ export default function DashboardPage() {
       setReplacingSampleTalentId(null)
     } catch (err) {
       console.error(err)
-      alert("Failed to replace audio sample")
+      alert(
+        "Failed to replace audio sample: " +
+          (err instanceof Error ? err.message : "unknown error")
+      )
     } finally {
       setIsUploadingSample(false)
       if (sampleInputRef.current) {
@@ -1443,17 +1434,9 @@ export default function DashboardPage() {
                                 if (!file) return
                                 setIsUploadingSample(true)
                                 setReplacingSampleTalentId(talent.id)
-                                const formData = new FormData()
-                                formData.append("file", file)
-                                formData.append("talent_id", talent.id)
-                                fetch("/api/upload-audio", { method: "POST", body: formData })
-                                  .then(res => res.json())
-                                  .then(uploadData => {
-                                    if (uploadData.error) {
-                                      alert("Failed to upload: " + uploadData.error)
-                                      return
-                                    }
-                                    return fetch("/api/samples", {
+                                uploadAudioFile(file, talent.id)
+                                  .then((uploadData) =>
+                                    fetch("/api/samples", {
                                       method: "POST",
                                       headers: { "Content-Type": "application/json" },
                                       body: JSON.stringify({
@@ -1462,16 +1445,19 @@ export default function DashboardPage() {
                                         title: file.name,
                                       }),
                                     })
-                                  })
-                                  .then(res => res?.json())
+                                  )
+                                  .then((res) => res.json())
                                   .then(() => fetch("/api/talent"))
-                                  .then(res => res.json())
-                                  .then(talentData => {
+                                  .then((res) => res.json())
+                                  .then((talentData) => {
                                     if (!talentData.error) setTalents(talentData.talent || [])
                                   })
-                                  .catch(err => {
+                                  .catch((err) => {
                                     console.error(err)
-                                    alert("Failed to add audio sample")
+                                    alert(
+                                      "Failed to add audio sample: " +
+                                        (err instanceof Error ? err.message : "unknown error")
+                                    )
                                   })
                                   .finally(() => {
                                     setIsUploadingSample(false)
