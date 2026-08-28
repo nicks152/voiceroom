@@ -1,24 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
-/** Allowed values for samples.styles (Postgres enum style_type). */
-const STYLE_TYPE = new Set([
-  "authoritative",
-  "documentary",
-  "urban",
-  "announcer",
-  "reporter",
-  "movie",
-  "commercial",
-])
-
-function asStyleList(values: unknown): string[] {
-  if (!Array.isArray(values)) return []
-  return values
-    .map((v) => String(v || "").toLowerCase().trim())
-    .filter((v) => STYLE_TYPE.has(v))
-}
-
 export async function GET(request: Request) {
   try {
     const supabase = createAdminClient()
@@ -62,7 +44,7 @@ export async function POST(request: Request) {
 
     const { data: talent, error: talentError } = await supabase
       .from("talent")
-      .select("age_band, gender, languages, tags")
+      .select("age_band, gender, languages")
       .eq("id", body.talent_id)
       .maybeSingle()
 
@@ -75,35 +57,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Talent not found" }, { status: 400 })
     }
 
-    const ageBand = String(body.age_band || talent.age_band || "25-35")
-    const gender = String(body.gender || talent.gender || "MALE")
-    const languages = Array.isArray(body.languages) && body.languages.length
-      ? body.languages
-      : Array.isArray(talent.languages)
-        ? talent.languages
-        : []
-    const tags = Array.isArray(body.tags) && body.tags.length
-      ? body.tags
-      : Array.isArray(talent.tags)
-        ? talent.tags
-        : []
-    // Never copy freeform tags into styles — style_type is a strict enum
-    const styles = asStyleList(body.styles?.length ? body.styles : tags)
+    // Only set columns we know are safe. Do NOT copy talent.tags into styles/tags —
+    // samples.styles uses enum style_type and rejects values like "warm"/"commercial".
+    const row: Record<string, unknown> = {
+      talent_id: body.talent_id,
+      title: body.title || "Sample",
+      file_url: body.file_url,
+      duration_sec: body.duration_sec ?? 0,
+      age_band: String(body.age_band || talent.age_band || "25-35"),
+      gender: String(body.gender || talent.gender || "MALE"),
+      languages:
+        Array.isArray(body.languages) && body.languages.length > 0
+          ? body.languages
+          : Array.isArray(talent.languages)
+            ? talent.languages
+            : [],
+      styles: [],
+      tags: [],
+      published: body.published ?? true,
+    }
 
     const { data, error } = await supabase
       .from("samples")
-      .insert({
-        talent_id: body.talent_id,
-        title: body.title || "Sample",
-        file_url: body.file_url,
-        duration_sec: body.duration_sec ?? 0,
-        age_band: ageBand,
-        gender,
-        languages,
-        styles,
-        tags,
-        published: body.published ?? true,
-      })
+      .insert(row)
       .select()
       .single()
 
