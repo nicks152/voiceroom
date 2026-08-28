@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
-import { uploadAudioFile } from "@/lib/upload-audio"
+import { uploadAudioFile, getAudioDurationSec } from "@/lib/upload-audio"
 
 // Sample type - matches Supabase schema
 interface SampleDB {
@@ -397,6 +397,7 @@ export default function DashboardPage() {
     try {
       // Direct-to-storage upload (signed URL) — avoids Vercel 4.5MB body limit
       const uploadData = await uploadAudioFile(file, talentId)
+      const durationSec = await getAudioDurationSec(file)
       
       // Update the sample record with new file URL
       const updateRes = await fetch("/api/samples", {
@@ -406,6 +407,7 @@ export default function DashboardPage() {
           id: sampleId,
           file_url: uploadData.url,
           title: file.name,
+          duration_sec: durationSec,
         }),
       })
       const updateData = await updateRes.json()
@@ -1435,17 +1437,19 @@ export default function DashboardPage() {
                                 setIsUploadingSample(true)
                                 setReplacingSampleTalentId(talent.id)
                                 uploadAudioFile(file, talent.id)
-                                  .then((uploadData) =>
-                                    fetch("/api/samples", {
+                                  .then(async (uploadData) => {
+                                    const durationSec = await getAudioDurationSec(file)
+                                    return fetch("/api/samples", {
                                       method: "POST",
                                       headers: { "Content-Type": "application/json" },
                                       body: JSON.stringify({
                                         talent_id: talent.id,
                                         file_url: uploadData.url,
                                         title: file.name,
+                                        duration_sec: durationSec,
                                       }),
                                     })
-                                  )
+                                  })
                                   .then(async (res) => {
                                     const data = await res.json()
                                     if (!res.ok || data.error) {
