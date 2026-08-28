@@ -41,7 +41,7 @@ export async function POST(request: Request) {
         talent_id: body.talent_id,
         title: body.title,
         file_url: body.file_url,
-        duration_sec: body.duration_sec || null,
+        duration_sec: body.duration_sec ?? 0,
         age_band: body.age_band || null,
         gender: body.gender || null,
         languages: body.languages || [],
@@ -105,7 +105,7 @@ export async function PUT(request: Request) {
       .update({
         file_url: body.file_url,
         title: body.title,
-        duration_sec: body.duration_sec || null,
+        duration_sec: body.duration_sec ?? 0,
       })
       .eq("id", body.id)
       .select()

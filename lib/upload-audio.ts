@@ -11,6 +11,26 @@ function arrayBufferToBase64(buffer: ArrayBuffer) {
   return btoa(binary)
 }
 
+/** Read duration in seconds from an audio File (0 if unreadable). */
+export function getAudioDurationSec(file: File): Promise<number> {
+  return new Promise((resolve) => {
+    try {
+      const url = URL.createObjectURL(file)
+      const audio = new Audio()
+      const done = (value: number) => {
+        URL.revokeObjectURL(url)
+        resolve(Number.isFinite(value) && value > 0 ? Math.round(value) : 0)
+      }
+      audio.preload = "metadata"
+      audio.onloadedmetadata = () => done(audio.duration)
+      audio.onerror = () => done(0)
+      audio.src = url
+    } catch {
+      resolve(0)
+    }
+  })
+}
+
 async function postJson(url: string, body: unknown, step: string) {
   let res: Response
   try {
