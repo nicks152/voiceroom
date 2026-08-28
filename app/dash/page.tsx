@@ -1450,7 +1450,6 @@ export default function DashboardPage() {
                                         age_band: talent.age_band,
                                         gender: talent.gender,
                                         languages: talent.languages || [],
-                                        tags: talent.tags || [],
                                       }),
                                     })
                                   })
