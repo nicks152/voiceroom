@@ -8,6 +8,7 @@ import { ConceptAudioPlayer } from "@/components/concepts/shared/audio-player"
 import { easeLuxury } from "@/components/voice-room/motion"
 import { useFavorites } from "@/contexts/favorites-context"
 import { displayName, firstSample, type Talent } from "@/lib/talent-types"
+import { saveRosterScroll } from "@/lib/roster-filters"
 
 type Props = {
   talent: Talent
@@ -35,6 +36,8 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
       window.prompt("Copy profile URL:", url)
     }
   }
+
+  const rememberScroll = () => saveRosterScroll()
 
   return (
     <motion.article
@@ -67,7 +70,11 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
         </div>
 
         <h3 className="display mt-3 text-2xl font-extrabold uppercase leading-none tracking-tight md:text-4xl">
-          <Link href={`/roster/${talent.id}`} className="hover:text-[var(--c4-cobalt)]">
+          <Link
+            href={`/roster/${talent.id}`}
+            onClick={rememberScroll}
+            className="hover:text-[var(--c4-cobalt)]"
+          >
             {name}
           </Link>
         </h3>
@@ -139,6 +146,7 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
 
             <Link
               href={`/roster/${talent.id}`}
+              onClick={rememberScroll}
               aria-label={`Open profile for ${name}`}
               className="flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
             >

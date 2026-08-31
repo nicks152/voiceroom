@@ -1,4 +1,5 @@
 const STORAGE_KEY = "vr-roster-filters-v1"
+const SCROLL_KEY = "vr-roster-scroll-v1"
 
 export type RosterFilters = {
   q: string
@@ -60,4 +61,25 @@ export function getRosterHref(): string {
   if (!saved) return "/roster"
   const qs = filtersToSearchParams(saved)
   return qs ? `/roster?${qs}` : "/roster"
+}
+
+export function saveRosterScroll(
+  y: number = typeof window !== "undefined" ? window.scrollY : 0,
+) {
+  try {
+    sessionStorage.setItem(SCROLL_KEY, String(Math.max(0, Math.round(y))))
+  } catch {
+    // ignore
+  }
+}
+
+export function loadRosterScroll(): number | null {
+  try {
+    const raw = sessionStorage.getItem(SCROLL_KEY)
+    if (raw == null) return null
+    const y = Number(raw)
+    return Number.isFinite(y) && y >= 0 ? y : null
+  } catch {
+    return null
+  }
 }

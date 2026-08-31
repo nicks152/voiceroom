@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { SiteShell } from "@/components/voice-room/site-shell"
 import { VoiceRoomCard } from "@/components/voice-room/voice-card"
@@ -9,8 +9,10 @@ import type { Talent } from "@/lib/talent-types"
 import {
   filtersToSearchParams,
   loadRosterFilters,
+  loadRosterScroll,
   ROSTER_DEFAULTS,
   saveRosterFilters,
+  saveRosterScroll,
 } from "@/lib/roster-filters"
 
 function RosterContent() {
@@ -90,6 +92,40 @@ function RosterContent() {
     }
     load()
   }, [])
+
+  // Remember scroll while browsing the roster
+  useEffect(() => {
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      window.requestAnimationFrame(() => {
+        saveRosterScroll(window.scrollY)
+        ticking = false
+      })
+    }
+    const onHide = () => saveRosterScroll(window.scrollY)
+    window.addEventListener("scroll", onScroll, { passive: true })
+    window.addEventListener("pagehide", onHide)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("pagehide", onHide)
+      saveRosterScroll(window.scrollY)
+    }
+  }, [])
+
+  // Restore scroll once after the list has rendered (return from profile/nav)
+  const didRestoreScroll = useRef(false)
+  useEffect(() => {
+    if (loading || !hydrated || didRestoreScroll.current) return
+    const y = loadRosterScroll()
+    didRestoreScroll.current = true
+    if (y == null || y <= 0) return
+    const id = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: y, left: 0, behavior: "auto" })
+    })
+    return () => window.cancelAnimationFrame(id)
+  }, [loading, hydrated, talents])
 
   const languages = useMemo(
     () =>
