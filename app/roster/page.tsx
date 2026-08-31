@@ -1,18 +1,52 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { SiteShell } from "@/components/voice-room/site-shell"
 import { VoiceRoomCard } from "@/components/voice-room/voice-card"
 import { HeroLine, Reveal } from "@/components/voice-room/motion"
 import type { Talent } from "@/lib/talent-types"
 
-export default function RosterPage() {
+const DEFAULT_LANGUAGE = "Language"
+const DEFAULT_GENDER = "Gender"
+const DEFAULT_STYLE = "Style"
+
+function RosterContent() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [talents, setTalents] = useState<Talent[]>([])
   const [loading, setLoading] = useState(true)
-  const [query, setQuery] = useState("")
-  const [language, setLanguage] = useState("Language")
-  const [gender, setGender] = useState("Gender")
-  const [tag, setTag] = useState("Style")
+
+  // URL is source of truth so back/forward restores filters
+  const query = searchParams.get("q") || ""
+  const language = searchParams.get("lang") || DEFAULT_LANGUAGE
+  const gender = searchParams.get("gender") || DEFAULT_GENDER
+  const tag = searchParams.get("style") || DEFAULT_STYLE
+
+  const setFilters = useCallback(
+    (next: Partial<{ q: string; lang: string; gender: string; style: string }>) => {
+      const params = new URLSearchParams(searchParams.toString())
+      const q = next.q !== undefined ? next.q : query
+      const lang = next.lang !== undefined ? next.lang : language
+      const nextGender = next.gender !== undefined ? next.gender : gender
+      const style = next.style !== undefined ? next.style : tag
+
+      if (q.trim()) params.set("q", q.trim())
+      else params.delete("q")
+      if (lang !== DEFAULT_LANGUAGE) params.set("lang", lang)
+      else params.delete("lang")
+      if (nextGender !== DEFAULT_GENDER) params.set("gender", nextGender)
+      else params.delete("gender")
+      if (style !== DEFAULT_STYLE) params.set("style", style)
+      else params.delete("style")
+
+      const qs = params.toString()
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+    },
+    [searchParams, query, language, gender, tag, pathname, router],
+  )
 
   useEffect(() => {
     async function load() {
@@ -53,9 +87,10 @@ export default function RosterPage() {
     return talents.filter((t) => {
       const name = `${t.pseudonym || ""} ${t.name || ""} ${t.description || ""} ${(t.tags || []).join(" ")}`
       if (query && !name.toLowerCase().includes(query.toLowerCase())) return false
-      if (language !== "Language" && !(t.languages || []).includes(language)) return false
-      if (gender !== "Gender" && t.gender !== gender) return false
-      if (tag !== "Style" && !(t.tags || []).includes(tag)) return false
+      if (language !== DEFAULT_LANGUAGE && !(t.languages || []).includes(language))
+        return false
+      if (gender !== DEFAULT_GENDER && t.gender !== gender) return false
+      if (tag !== DEFAULT_STYLE && !(t.tags || []).includes(tag)) return false
       return true
     })
   }, [talents, query, language, gender, tag])
@@ -76,13 +111,16 @@ export default function RosterPage() {
           </p>
         </Reveal>
 
-        <Reveal delay={0.15} className="mt-12 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] p-5 md:p-6">
+        <Reveal
+          delay={0.15}
+          className="mt-12 border-2 border-[var(--c4-black)] bg-[var(--c4-yellow)] p-5 md:p-6"
+        >
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <label className="block flex-1">
               <span className="c4-label">Search</span>
               <input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => setFilters({ q: e.target.value })}
                 placeholder="Name, tone, language, style…"
                 className="mt-2 w-full border-b-2 border-[var(--c4-black)] bg-transparent py-2 text-sm outline-none placeholder:text-[var(--c4-black)]/40"
               />
@@ -90,29 +128,29 @@ export default function RosterPage() {
             <div className="flex flex-wrap gap-2">
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                onChange={(e) => setFilters({ lang: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value="Language">Language</option>
+                <option value={DEFAULT_LANGUAGE}>Language</option>
                 {languages.map((l) => (
                   <option key={l}>{l}</option>
                 ))}
               </select>
               <select
                 value={gender}
-                onChange={(e) => setGender(e.target.value)}
+                onChange={(e) => setFilters({ gender: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value="Gender">Gender</option>
+                <option value={DEFAULT_GENDER}>Gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
               </select>
               <select
                 value={tag}
-                onChange={(e) => setTag(e.target.value)}
+                onChange={(e) => setFilters({ style: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value="Style">Style</option>
+                <option value={DEFAULT_STYLE}>Style</option>
                 {tags.map((t) => (
                   <option key={t}>{t}</option>
                 ))}
@@ -140,5 +178,21 @@ export default function RosterPage() {
         ) : null}
       </main>
     </SiteShell>
+  )
+}
+
+export default function RosterPage() {
+  return (
+    <Suspense
+      fallback={
+        <SiteShell>
+          <main className="mx-auto max-w-[1440px] px-5 py-14 md:px-10">
+            <p className="c4-label">Loading roster…</p>
+          </main>
+        </SiteShell>
+      }
+    >
+      <RosterContent />
+    </Suspense>
   )
 }
