@@ -1,12 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ArrowUpRight, Star } from "lucide-react"
+import { ArrowUpRight, Check, Link2, Star } from "lucide-react"
 import { ConceptAudioPlayer } from "@/components/concepts/shared/audio-player"
 import { easeLuxury } from "@/components/voice-room/motion"
 import { useFavorites } from "@/contexts/favorites-context"
-import { useInquiry } from "@/contexts/inquiry-context"
 import { displayName, firstSample, type Talent } from "@/lib/talent-types"
 
 type Props = {
@@ -21,9 +21,20 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
   const languages = talent.languages || []
   const tags = talent.tags || []
   const isGrid = variant === "grid"
-  const { toggleFavorite, addFavorite, isFavorite } = useFavorites()
-  const { openInquiry } = useInquiry()
+  const { toggleFavorite, isFavorite } = useFavorites()
   const shortlisted = isFavorite(name)
+  const [copied, setCopied] = useState(false)
+
+  const copyProfileUrl = async () => {
+    const url = `${window.location.origin}/roster/${talent.id}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1600)
+    } catch {
+      window.prompt("Copy profile URL:", url)
+    }
+  }
 
   return (
     <motion.article
@@ -115,15 +126,24 @@ export function VoiceRoomCard({ talent, index = 0, variant = "list" }: Props) {
 
             <button
               type="button"
-              aria-label={`Inquire about ${name}`}
-              onClick={() => {
-                addFavorite(name)
-                openInquiry()
-              }}
+              aria-label={copied ? "Profile URL copied" : `Copy profile URL for ${name}`}
+              onClick={() => void copyProfileUrl()}
+              className={`flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] transition-colors ${
+                copied
+                  ? "bg-[var(--c4-cobalt)] text-[var(--c4-white)]"
+                  : "bg-[var(--c4-white)] text-[var(--c4-black)] hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
+              }`}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+            </button>
+
+            <Link
+              href={`/roster/${talent.id}`}
+              aria-label={`Open profile for ${name}`}
               className="flex h-10 w-10 items-center justify-center border-2 border-[var(--c4-black)] bg-[var(--c4-white)] text-[var(--c4-black)] transition-colors hover:bg-[var(--c4-black)] hover:text-[var(--c4-white)]"
             >
               <ArrowUpRight className="h-4 w-4" />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
