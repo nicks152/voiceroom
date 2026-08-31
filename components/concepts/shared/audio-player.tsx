@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { claimAudioPlayback, releaseAudioPlayback } from "@/lib/audio-playback"
 
 type Props = {
   src: string
@@ -40,16 +41,30 @@ export function ConceptAudioPlayer({
         setProgress(audio.currentTime / audio.duration)
       }
     }
+    const onPlay = () => {
+      claimAudioPlayback(audio)
+      setPlaying(true)
+    }
+    const onPause = () => {
+      setPlaying(false)
+      releaseAudioPlayback(audio)
+    }
     const onEnd = () => {
       setPlaying(false)
       setProgress(0)
       setCurrent(0)
+      releaseAudioPlayback(audio)
     }
     audio.addEventListener("timeupdate", onTime)
+    audio.addEventListener("play", onPlay)
+    audio.addEventListener("pause", onPause)
     audio.addEventListener("ended", onEnd)
     return () => {
       audio.pause()
+      releaseAudioPlayback(audio)
       audio.removeEventListener("timeupdate", onTime)
+      audio.removeEventListener("play", onPlay)
+      audio.removeEventListener("pause", onPause)
       audio.removeEventListener("ended", onEnd)
       audioRef.current = null
     }
@@ -60,9 +75,9 @@ export function ConceptAudioPlayer({
     if (!audio) return
     if (playing) {
       audio.pause()
-      setPlaying(false)
     } else {
-      void audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false))
+      claimAudioPlayback(audio)
+      void audio.play().catch(() => setPlaying(false))
     }
   }
 
