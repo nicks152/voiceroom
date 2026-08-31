@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useInquiry } from "@/contexts/inquiry-context"
 import { InquiryModal } from "@/components/inquiry-modal"
+import { getRosterHref } from "@/lib/roster-filters"
 
 const LINKS = [
   { href: "/roster", label: "Roster" },
@@ -20,6 +21,8 @@ export function VoiceRoomNav() {
   const [open, setOpen] = useState(false)
   const { count } = useFavorites()
   const { isOpen: isInquiryOpen, openInquiry, closeInquiry } = useInquiry()
+
+  const linkHref = (href: string) => (href === "/roster" ? getRosterHref() : href)
 
   return (
     <>
@@ -41,7 +44,7 @@ export function VoiceRoomNav() {
               return (
                 <Link
                   key={l.href}
-                  href={l.href}
+                  href={linkHref(l.href)}
                   className={`relative px-4 py-2 text-[11px] font-medium tracking-[0.18em] uppercase transition-colors ${
                     active
                       ? "text-[var(--c4-black)]"
@@ -104,7 +107,7 @@ export function VoiceRoomNav() {
                 {LINKS.map((l) => (
                   <Link
                     key={l.href}
-                    href={l.href}
+                    href={linkHref(l.href)}
                     onClick={() => setOpen(false)}
                     className="display border-b border-[var(--c4-line)] py-4 text-2xl font-bold uppercase"
                   >

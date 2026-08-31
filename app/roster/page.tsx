@@ -6,10 +6,12 @@ import { SiteShell } from "@/components/voice-room/site-shell"
 import { VoiceRoomCard } from "@/components/voice-room/voice-card"
 import { HeroLine, Reveal } from "@/components/voice-room/motion"
 import type { Talent } from "@/lib/talent-types"
-
-const DEFAULT_LANGUAGE = "Language"
-const DEFAULT_GENDER = "Gender"
-const DEFAULT_STYLE = "Style"
+import {
+  filtersToSearchParams,
+  loadRosterFilters,
+  ROSTER_DEFAULTS,
+  saveRosterFilters,
+} from "@/lib/roster-filters"
 
 function RosterContent() {
   const router = useRouter()
@@ -18,34 +20,55 @@ function RosterContent() {
 
   const [talents, setTalents] = useState<Talent[]>([])
   const [loading, setLoading] = useState(true)
+  const [hydrated, setHydrated] = useState(false)
 
-  // URL is source of truth so back/forward restores filters
+  const hasUrlFilters =
+    searchParams.has("q") ||
+    searchParams.has("lang") ||
+    searchParams.has("gender") ||
+    searchParams.has("style")
+
+  // Restore last filters when landing on bare /roster (e.g. nav from a profile)
+  useEffect(() => {
+    if (hasUrlFilters) {
+      setHydrated(true)
+      return
+    }
+    const saved = loadRosterFilters()
+    if (!saved) {
+      setHydrated(true)
+      return
+    }
+    const qs = filtersToSearchParams(saved)
+    if (qs) {
+      router.replace(`${pathname}?${qs}`, { scroll: false })
+    }
+    setHydrated(true)
+  }, [hasUrlFilters, pathname, router])
+
   const query = searchParams.get("q") || ""
-  const language = searchParams.get("lang") || DEFAULT_LANGUAGE
-  const gender = searchParams.get("gender") || DEFAULT_GENDER
-  const tag = searchParams.get("style") || DEFAULT_STYLE
+  const language = searchParams.get("lang") || ROSTER_DEFAULTS.language
+  const gender = searchParams.get("gender") || ROSTER_DEFAULTS.gender
+  const tag = searchParams.get("style") || ROSTER_DEFAULTS.style
+
+  // Keep sessionStorage in sync whenever URL filters are active
+  useEffect(() => {
+    if (!hydrated) return
+    saveRosterFilters({ q: query, lang: language, gender, style: tag })
+  }, [hydrated, query, language, gender, tag])
 
   const setFilters = useCallback(
     (next: Partial<{ q: string; lang: string; gender: string; style: string }>) => {
-      const params = new URLSearchParams(searchParams.toString())
       const q = next.q !== undefined ? next.q : query
       const lang = next.lang !== undefined ? next.lang : language
       const nextGender = next.gender !== undefined ? next.gender : gender
       const style = next.style !== undefined ? next.style : tag
-
-      if (q.trim()) params.set("q", q.trim())
-      else params.delete("q")
-      if (lang !== DEFAULT_LANGUAGE) params.set("lang", lang)
-      else params.delete("lang")
-      if (nextGender !== DEFAULT_GENDER) params.set("gender", nextGender)
-      else params.delete("gender")
-      if (style !== DEFAULT_STYLE) params.set("style", style)
-      else params.delete("style")
-
-      const qs = params.toString()
+      const filters = { q, lang, gender: nextGender, style }
+      saveRosterFilters(filters)
+      const qs = filtersToSearchParams(filters)
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     },
-    [searchParams, query, language, gender, tag, pathname, router],
+    [query, language, gender, tag, pathname, router],
   )
 
   useEffect(() => {
@@ -87,10 +110,14 @@ function RosterContent() {
     return talents.filter((t) => {
       const name = `${t.pseudonym || ""} ${t.name || ""} ${t.description || ""} ${(t.tags || []).join(" ")}`
       if (query && !name.toLowerCase().includes(query.toLowerCase())) return false
-      if (language !== DEFAULT_LANGUAGE && !(t.languages || []).includes(language))
+      if (
+        language !== ROSTER_DEFAULTS.language &&
+        !(t.languages || []).includes(language)
+      ) {
         return false
-      if (gender !== DEFAULT_GENDER && t.gender !== gender) return false
-      if (tag !== DEFAULT_STYLE && !(t.tags || []).includes(tag)) return false
+      }
+      if (gender !== ROSTER_DEFAULTS.gender && t.gender !== gender) return false
+      if (tag !== ROSTER_DEFAULTS.style && !(t.tags || []).includes(tag)) return false
       return true
     })
   }, [talents, query, language, gender, tag])
@@ -131,7 +158,7 @@ function RosterContent() {
                 onChange={(e) => setFilters({ lang: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value={DEFAULT_LANGUAGE}>Language</option>
+                <option value={ROSTER_DEFAULTS.language}>Language</option>
                 {languages.map((l) => (
                   <option key={l}>{l}</option>
                 ))}
@@ -141,7 +168,7 @@ function RosterContent() {
                 onChange={(e) => setFilters({ gender: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value={DEFAULT_GENDER}>Gender</option>
+                <option value={ROSTER_DEFAULTS.gender}>Gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
               </select>
@@ -150,7 +177,7 @@ function RosterContent() {
                 onChange={(e) => setFilters({ style: e.target.value })}
                 className="border-2 border-[var(--c4-black)] bg-[var(--c4-white)] px-3 py-2 text-[10px] tracking-[0.14em] uppercase"
               >
-                <option value={DEFAULT_STYLE}>Style</option>
+                <option value={ROSTER_DEFAULTS.style}>Style</option>
                 {tags.map((t) => (
                   <option key={t}>{t}</option>
                 ))}
